@@ -1,0 +1,119 @@
+{
+  "name": "BewerberEingangStatus",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "77e4055e-57c2-448f-b648-73f7b351a169",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -112
+      ],
+      "id": "0df4d482-ee5a-494b-bd86-03a7fc8d4f11",
+      "name": "Webhook",
+      "webhookId": "77e4055e-57c2-448f-b648-73f7b351a169"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('Webhook').item.json.body.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"status\": \"Replied\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        192,
+        -112
+      ],
+      "id": "b59d5dae-702a-4848-a664-9b2bd24b603c",
+      "name": "HTTP Request",
+      "credentials": {
+        "erpNextApi": {
+          "id": "a1ERsZQlr0iW7WEq",
+          "name": "ERPNext account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email_id }}",
+        "subject": "Ihre Bewerbung ist eingegangen",
+        "emailType": "text",
+        "message": "=Hallo {{$json.body.applicant_name}},\n\nvielen Dank für Ihre Bewerbung als {{$json.body.position}}.\n\nWir haben Ihre Bewerbung erhalten und melden uns zeitnah bei Ihnen.\n\nFreundliche Grüße\nHR-Team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        -112
+      ],
+      "id": "6d34917c-0961-4c78-bb09-b094785a1b98",
+      "name": "Send a message",
+      "webhookId": "827174b2-523b-49d0-bd83-3c9f3f5aa01f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NYk3GN3X1a1XJHSo",
+          "name": "Gmail account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "17b2cbbe-7a43-4da7-81f6-aa4b832727df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "nvYGZNAhRsnqgKrK",
+  "tags": []
+}
