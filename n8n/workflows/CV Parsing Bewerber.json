@@ -1,0 +1,281 @@
+{
+  "name": "CV Parsing Bewerber",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f991c02f-dc8c-4d6c-b9c4-2d5fe7091574",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ff9989b0-7ced-4489-bbe7-ad5c379cc37e",
+      "name": "Webhook",
+      "webhookId": "f991c02f-dc8c-4d6c-b9c4-2d5fe7091574"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein erfahrener HR-Manager und Recruiting-Experte. Deine Aufgabe ist es, den bereitgestellten Lebenslauf präzise zu analysieren und die relevanten Daten strukturiert als JSON-Objekt zu extrahieren.\n\nAnalysiere den Lebenslauf und erstelle ein valides JSON-Objekt, das exakt den Feldnamen des ERPNext DocTypes \"Bewerber\" entspricht. \n\nWICHTIG:\n- Gib AUSSCHLIESSLICH das JSON-Objekt zurück. \n- Schreibe keinen Einleitungstext, keine Erklärungen und keine Markdown-Formatierung. - Vermeide generische Formulierungen sowie Halluzinationen.\n\nHier ist der zu analysierende Lebenslauf-Text:\n{{ $json.text }}\n\nStruktur des auszugebenden JSON-Objekts (Halte dich exakt an diese Feldnamen):\n\n{\n    \"custom_zusammenfassung_cv\": \"Professionelle Zusammenfassung in der 3. Person über den Bewerber. Enthalte die wichtigsten Bullet Points zu Aufgaben und Kernkompetenzen sowie andere wichtige Fähigkeiten und Eigenschaften aus dem Lebenslauf.\",\n  \n  \"custom_höchster_bildungsabschluss\": \"Extrahiere den höchsten Abschluss (z.B. 'M.Sc. Software Engineering' oder 'Abitur').\",\n  \"custom_gesamtberufsjahre\": Zahl als Ganzzahl nehmen: '0'\",\n  \"custom_beruflicher_werdegang\": [\n    {\n      \"custom_cvunternehmen\": \"Name des Unternehmens\",\n      \"custom_cvjobtitel__position\": \"Position / Jobtitel\",\n      \"custom_cvzeitraum\": \"Format: MM/JJJJ - MM/JJJJ oder MM/JJJJ - Heute\"\n    }\n  ],\n  \"custom_sprachkenntnisse\": [\n    {\n      \"custom_cvsprachkenntnnisse\": \"Sprache\",\n      \"custom_cvsprachniveau\": \"Erlaubte Werte und es darf nur einer dieser Werte genommen werden pro Sprachkennntniss: A1, A2, B1, B2, C1, C2, Muttersprache\"\n    }\n  ],\n  \"custom_skills_und_technologien\": [\n    {\n      \"custom_cvskill_technologie\": \"IT-Skill / Technologie\",\n      \"custom_cveinstufung\": \"Erlaubte Werte und es darf nur einer dieser Werte genommen werden pro Skill / Technologie: Grundkenntnisse, Fortgeschritten, Experte\"\n    }\n  ],\n  \"custom_github_profil\": \"Vollständige URL oder leerer String\",\n  \"custom_linkedin_profil\": \"Vollständige URL oder leerer String\"\n}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        640,
+        0
+      ],
+      "id": "a59dbca8-e404-4a23-b767-3c8289aef411",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-nano-30b-a3b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        640,
+        176
+      ],
+      "id": "960eb7c0-a681-427f-ae0b-50f1ca5894e2",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/method/frappe.core.doctype.file.file.download_file?file_url={{ $json.body.resume_attachment }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c472d639-adbf-4a80-aded-f16f127e4ea4",
+      "name": "HTTP Request-GET PDF",
+      "credentials": {
+        "erpNextApi": {
+          "id": "a1ERsZQlr0iW7WEq",
+          "name": "ERPNext account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "75f8da77-8a0e-4fce-8f6a-76932441992c",
+      "name": "Extract from File: CV Extractor"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('Webhook').item.json.body.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "custom_zusammenfassung_cv",
+              "value": "={{ JSON.parse($json.text).custom_zusammenfassung_cv }}"
+            },
+            {
+              "name": "custom_höchster_bildungsabschluss",
+              "value": "={{ JSON.parse($json.text).custom_höchster_bildungsabschluss }}"
+            },
+            {
+              "name": "custom_gesamtberufsjahre",
+              "value": "={{ JSON.parse($json.text).custom_gesamtberufsjahre }}"
+            },
+            {
+              "name": "custom_beruflicher_werdegang",
+              "value": "={{ $json.text ? JSON.parse($json.text).custom_beruflicher_werdegang : [] }}"
+            },
+            {
+              "name": "custom_sprachkenntnisse",
+              "value": "={{ $json.text ? JSON.parse($json.text).custom_sprachkenntnisse : [] }}"
+            },
+            {
+              "name": "custom_skills_und_technologien",
+              "value": "={{ $json.text ? JSON.parse($json.text).custom_skills_und_technologien : [] }}"
+            },
+            {
+              "name": "custom_github_profil",
+              "value": "={{ JSON.parse($json.text).custom_github_profil }}"
+            },
+            {
+              "name": "custom_linkedin_profil",
+              "value": "={{ JSON.parse($json.text).custom_linkedin_profil }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        0
+      ],
+      "id": "2e3873ed-85db-491c-be86-8c2435f22b99",
+      "name": "HTTP Request: Upload the extracted CV information",
+      "credentials": {
+        "erpNextApi": {
+          "id": "a1ERsZQlr0iW7WEq",
+          "name": "ERPNext account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "DbT3DrlTn4YfeoXn",
+          "mode": "list",
+          "cachedResultUrl": "/n8n/workflow/DbT3DrlTn4YfeoXn",
+          "cachedResultName": "ApplicantScoring"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "test"
+          ],
+          "schema": [
+            {
+              "id": "test",
+              "displayName": "test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "86eeb2db-49e1-4f28-9c85-9b023e30a92e",
+      "name": "Call 'ApplicantScoring'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request-GET PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Upload the extracted CV information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request-GET PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract from File: CV Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File: CV Extractor": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Upload the extracted CV information": {
+      "main": [
+        [
+          {
+            "node": "Call 'ApplicantScoring'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6831f5e1-cd49-41cf-b8f0-f161297505f4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "fwjJ7JHxvtx9BBtb",
+  "tags": []
+}
