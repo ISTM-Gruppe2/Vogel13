@@ -1,0 +1,1446 @@
+{
+  "name": "ApplicantInterviewTimeslots",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "interview-tslots-suggestions",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        336
+      ],
+      "id": "77a61ae8-fb78-44c9-b56b-0317d340dbd1",
+      "name": "Webhook:GET-Webseite Terminvorschlag",
+      "webhookId": "67cf5b84-76b2-41e8-9d08-18299f52ca75"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://grp03.pia-web.ris.uni-due.de"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1072,
+        192
+      ],
+      "id": "7adfd3ab-dba6-49af-9f1c-5a46166f2acf",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "action": "generate",
+        "dataPropertyName": "url_hash"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -416
+      ],
+      "id": "df5cd037-c1ec-472f-b9bc-6dd264ac77f9",
+      "name": "Crypto: URL Hash generator"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "interview-tslots-suggestions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -416
+      ],
+      "id": "834413bd-7233-4e4e-a2ce-fbac04af7e2e",
+      "name": "Webhook: Bewerber Terminvorschlag Trigger",
+      "webhookId": "74af2d74-3908-455d-9400-0845b9c9e362"
+    },
+    {
+      "parameters": {
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Timeslots",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filters",
+              "value": "=[[\"Interview Timeslots\",\"custom_urlhash_sugdate\",\"=\",\"{{ $json.query.hash }}\"]]"
+            },
+            {
+              "name": "=[[\"Interview Timeslots\",\"custom_urlhash_sugdate\",\"=\",\"{{ $json.body.Url_HASH }}\"]]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        176,
+        336
+      ],
+      "id": "2948e3e6-9297-448d-880b-373414874487",
+      "name": "HTTP Request - Abfrage HASH erhalte name_id",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $json.data[0].name }}"
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        384,
+        336
+      ],
+      "id": "be9f78f4-28a6-43b5-88cf-370bb9d70676",
+      "name": "Bewerbungstermine abholen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "a1ERsZQlr0iW7WEq",
+          "name": "ERPNext account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filters",
+              "value": "=[[\"name\",\"=\",\"{{ $json.body.email_id }}\"]]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        256,
+        -208
+      ],
+      "id": "328c6c7e-6ad6-4c8d-86b3-c378534508c3",
+      "name": "HTTP Request - Bewerberdaten abfrage",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $json.body.dataName_id }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "custom_urlhash_sugdate",
+              "value": "={{ $json.url_hash }}"
+            },
+            {
+              "field": "custom_urlinterviewdates_sugdate",
+              "value": "=https://grp03.pia-web.ris.uni-due.de/int-timeslots?hash={{ $json.url_hash }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -416
+      ],
+      "id": "9ee94fb3-87df-46d8-96b7-87d10bc019eb",
+      "name": "Update Terminvorschlag HASH URL",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Job%20Applicant",
+        "documentName": "={{ $json.data[0].name }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "status",
+              "value": "Einladung ausstehend"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -208
+      ],
+      "id": "4c4ea06c-3ab5-48d1-8b3f-8c6bd48ab2be",
+      "name": "Update Bewerberstatus",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "confirm-button-inttslots",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        1152
+      ],
+      "id": "8578746f-cb58-4220-905e-1036c635c9a7",
+      "name": "Webhook:Button Bestaetigen",
+      "webhookId": "9521b824-bd49-4c1e-965a-1c17a8230233"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const slots = $json.data.custom_timeslots_sugdate;\nconst targetId = $('Webhook:Button Bestaetigen').first().json.body.childSlot_id;\n\nlet acceptedSlotObject = null;\n\nconst updatedSlots = slots.map(slot => {\n    if (slot.name === targetId) {\n        slot.custom_status_tslot = \"Accepted\";\n        acceptedSlotObject = { ...slot }; // kopie des \"accepted\" slot\n    } else {\n        slot.custom_status_tslot = \"Rejected\";\n    }\n    return slot;\n});\n\nreturn {\n    json: {\n        custom_timeslots_sugdate: updatedSlots,\n        accepted_slot: acceptedSlotObject\n    }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        1008
+      ],
+      "id": "dd6e551a-8bde-4472-bdfb-a29e4c9a488a",
+      "name": "JS Code: Termin akzeptieren / ablehnen"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Timeslots/{{ $('Webhook:Button Bestaetigen').item.json.body.parentMain_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        1008
+      ],
+      "id": "2847974a-469c-48b1-9cb0-4d5569d3bda5",
+      "name": "HTTP Request: Update alle Slots",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Job%20Applicant",
+        "documentName": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "status",
+              "value": "Interview geplant"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        1008
+      ],
+      "id": "2dac203a-d1cf-47c6-a895-c6c40604cb17",
+      "name": "Bewerberstatus auf \"Interview geplant\" gestellt",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein HR-Mitarbeiter und erhältst von Bewerbern freie Textangaben zu ihren Wunschzeiten für ein Vorstellungsgespräch. Diese Angaben können unstrukturiert sein, zum Beispiel:\n\n„Am 10.07.2026 vormittags oder nachmittags“\n„Nächste Woche Dienstag oder Mittwoch den ganzen Tag“\n\nHier ist die freie Textangabe der Bewerber: {{ $('Webhook:Button Bestaetigen').item.json.body.custom_prefdatetext_sugdate }}\n\nHier sind die bereits vorgeschlagenen Termine des HRlers: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_timeslots_sugdate.map(slot => slot.custom_interview_date_tslot + \" von \" + slot.custom_start_time_tslot + \" - \" + slot.custom_end_time_tslot).join(\", \") }}\n\nHier sind alle aktuell geplanten Bewerbungsgespräche: {{ $('Alle Interview holen').item.json.data.map(slot => slot.name + \" , \" + slot.job_applicant + \" , \" + slot.scheduled_on + \" von \" + slot.from_time + \" - \" + slot.to_time).join(\" | \") }}\n\nDeine Aufgabe ist es, diesen Text des Bewerbers in konkrete, strukturierte 1-stündige Interview-Zeitfenster umzuwandeln und im folgenden vorgegebenen JSON-Format auszugeben.\n\nWICHTIGE Regeln:\n\n- Es dürfen höchstens 4 neue Alternativtermine vorgeschlagen werden und dürfen nicht identisch wie die bereits vorgeschlagenen Termine sein. Es müssen mindestens 2 neue Termine vorgeschlagen werden.\n- Der Status der neuen Alternativtermine soll auf \"Alternativtermin angefordert\" gesetzt werden\n- Alternativtermine dürfen nur zwischen Montag und Freitag stattfinden. Beachte das heutige Datum: {{ $now.format('cccc, dd.MM.yyyy') }}\n- Alternativtermine dürfen nicht in der Vergangenheit oder am selben Tag erstellt werden. Beachte das heutige Datum: {{ $now.format('cccc, dd.MM.yyyy') }}. Als Beispiel: bereits erster vorgeschlagener Termin am 14.07, dann darf der neue Alternativtermin nicht vorher liegen, z.B. am 13.07.\n- Die Alternativtermine dürfen NICHT im gleichen Zeitraum mit den geplanten Bewerbungsgesprächen stattfinden\n- Termine dürfen nur zwischen 09:00 Uhr und 17:00 Uhr liegen.\n- Jeder Termin dauert genau 1 Stunde.\n- „Morgens“ entspricht Zeitfenstern zwischen 09:00 und 10:00 Uhr.\n- „Vormittags“ entspricht Zeitfenstern zwischen 10:00 und 12:00 Uhr.\n- „Mittags“ entspricht Zeitfenstern zwischen 12:00 und 14:00 Uhr.\n- „Nachmittags“ entspricht Zeitfenstern zwischen 14:00 und 17:00 Uhr.\n- „Ganzer Tag“ bedeutet alle möglichen 1-stündigen Slots zwischen 09:00 und 17:00 Uhr.\n- Relative Angaben wie „nächste Woche Dienstag“ müssen in ein konkretes Datum umgerechnet werden.\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1040,
+        1232
+      ],
+      "id": "0fa43e0e-2524-4807-9ffc-86260dd81e55",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        976,
+        1408
+      ],
+      "id": "6482c06a-64b7-44d9-9234-252202632de7",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "GnI3LwT9giGC7g1N",
+          "name": "OpenRouter account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"new_slots\": {\n      \"type\": \"array\",\n      \"description\": \"Liste der vom Bewerber vorgeschlagenen Alternativtermine, extrahiert aus dem Freitext.\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"custom_interview_date_tslot\": {\n            \"type\": \"string\",\n            \"description\": \"Das vorgeschlagene Datum im Format YYYY-MM-DD.\"\n          },\n          \"custom_start_time_tslot\": {\n            \"type\": \"string\",\n            \"description\": \"Die Startzeit im Format HH:MM:SS.\"\n          },\n          \"custom_end_time_tslot\": {\n            \"type\": \"string\",\n            \"description\": \"Die Endzeit im Format HH:MM:SS. Wenn nicht genannt, setze sie automatisch genau 1 Stunde nach der Startzeit an.\"\n          },\n          \"custom_status_tslot\": {\n            \"type\": \"string\",\n            \"enum\": [\"Alternativtermin angefordert\"],\n            \"description\": \"Muss immer exakt 'Alternativtermin angefordert' sein.\"\n          },\n          \"parentfield\": {\n            \"type\": \"string\",\n            \"enum\": [\"custom_timeslots_sugdate\"],\n            \"description\": \"Muss immer exakt 'custom_timeslots_sugdate' sein.\"\n          },\n          \"parenttype\": {\n            \"type\": \"string\",\n            \"enum\": [\"Job Interview Suggested Date\"],\n            \"description\": \"Muss immer exakt 'Job Interview Suggested Date' sein.\"\n          },\n          \"doctype\": {\n            \"type\": \"string\",\n            \"enum\": [\"Job Interview Timeslots\"],\n            \"description\": \"Muss immer exakt 'Job Interview Timeslots' sein.\"\n          }\n        },\n        \"required\": [\n          \"custom_interview_date_tslot\",\n          \"custom_start_time_tslot\",\n          \"custom_end_time_tslot\",\n          \"custom_status_tslot\",\n          \"parentfield\",\n          \"parenttype\",\n          \"doctype\"\n        ]\n      }\n    }\n  },\n  \"required\": [\n    \"new_slots\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        1408
+      ],
+      "id": "7121035b-b289-45ab-93af-69a99da0ee01",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: \"alternative_dates_requested\", data: [ $json ] } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://grp03.pia-web.ris.uni-due.de"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1072,
+        416
+      ],
+      "id": "b405f34e-28a3-45ff-9ef9-a169d2f7dce6",
+      "name": "Respond to Webhook_alternative_dates"
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Timeslots/{{ $json.body.parentMain_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        1152
+      ],
+      "id": "ee4404ef-3186-4f48-a258-03ffea0b96ae",
+      "name": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "664c2aad-672d-4315-9521-4c66909ee355",
+              "leftValue": "={{ $('Bewerbungstermine abholen').item.json.custom_timeslots_sugdate.some(slot => slot.custom_status_tslot === 'Accepted') }}",
+              "rightValue": "Accepted",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        400
+      ],
+      "id": "4de44ff4-38a4-4915-8f90-36412abc58b7",
+      "name": "If_check_slot_accepted"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $('Webhook:Button Bestaetigen').item.json.body.parentMain_id }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "interview",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "field": "custom_slotaccepteddate_sugdate",
+              "value": "={{ $json.creation }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        1008
+      ],
+      "id": "a38270f6-3ea1-4b42-a34e-f1559b05ef80",
+      "name": "Slot Akzeptiert",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7753fe81-aad8-4c41-9987-6d86f695e4e3",
+              "leftValue": "={{ $json.custom_prefdatetext_sugdate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        336
+      ],
+      "id": "f478b143-4e54-46f9-9ef6-dd944bb28087",
+      "name": "If_check_alternative_dates"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $('Webhook:Button Bestaetigen').item.json.body.parentMain_id }}"
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        992,
+        784
+      ],
+      "id": "07f97aed-a71f-4314-846b-fb37b84942fe",
+      "name": "Terminvorschlag Datensatz entfernen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Interview",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "[\"name\", \"job_applicant\", \"scheduled_on\", \"from_time\", \"to_time\"]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        1232
+      ],
+      "id": "e16c016c-eb5a-45b0-82f0-246ad555732a",
+      "name": "Alle Interview holen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $('Webhook:Button Bestaetigen').item.json.body.parentMain_id }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "custom_prefdatetext_sugdate",
+              "value": "={{ $('Webhook:Button Bestaetigen').item.json.body.custom_prefdatetext_sugdate }}"
+            },
+            {
+              "field": "custom_timeslots_sugdate",
+              "value": "={{ $json.all_timeslots }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        1232
+      ],
+      "id": "7840cce9-68e1-42f4-849c-6c536e9f90fa",
+      "name": "Wunschtermin speichern",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const oldSlots = $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').first().json.data.custom_timeslots_sugdate;\n\noldSlots.forEach(slot => {\n    if (slot.custom_status_tslot === \"Pending\") {\n        slot.custom_status_tslot = \"Rejected\"; \n    }\n});\n\nconst newSlots = $('Basic LLM Chain').first().json.output.new_slots;\n\nconst allSlots = oldSlots.concat(newSlots);\n\nreturn {\n    all_timeslots: allSlots\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        1232
+      ],
+      "id": "f638e698-0d81-4bf5-b423-866f7df660e1",
+      "name": "Code: Alle Slots abgelehnt"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "Bewerbung zurückgezogen"
+            },
+            {
+              "name": "custom_grund_für_den_rückzug",
+              "value": "={{ $('Webhook:Button Bestaetigen').item.json.body.withdrawReason }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        784
+      ],
+      "id": "8cac49b9-73dc-4c1c-a44b-9e6f058fd04a",
+      "name": "Bewerberstatus aendern und Grund angeben",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook:Button Bestaetigen').item.json.body.withdrawReq }}",
+                    "rightValue": "withdraw_requested",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "11fbdb45-9a81-46c6-b604-f867931efbc2"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a74586c2-5ed5-4bf4-80de-8e7768f20b53",
+                    "leftValue": "={{ $('Webhook:Button Bestaetigen').item.json.body.childSlot_id }}",
+                    "rightValue": "childSlot_id",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1a16cd93-d731-479b-9e3e-8ef65092831e",
+                    "leftValue": "={{ $('Webhook:Button Bestaetigen').item.json.body.altReq }}",
+                    "rightValue": "alternative_requested",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        1136
+      ],
+      "id": "4bd5170d-7869-4f0b-81f7-b63b7ae7f5fd",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "docType": "Interview",
+        "documentName": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.interview }}"
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        784
+      ],
+      "id": "1b2047a3-dab5-4b33-bb5c-9604e384d840",
+      "name": "Interview loeschen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "docType": "Interview",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "designation",
+              "value": "={{ $json.data.custom_designation_sugdate }}"
+            },
+            {
+              "field": "from_time",
+              "value": "={{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_start_time_tslot }}"
+            },
+            {
+              "field": "to_time",
+              "value": "={{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_end_time_tslot }}"
+            },
+            {
+              "field": "scheduled_on",
+              "value": "={{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_interview_date_tslot }}"
+            },
+            {
+              "field": "job_applicant",
+              "value": "={{ $json.data.custom_applicantmail_sugdate }}"
+            },
+            {
+              "field": "status",
+              "value": "=Cleared"
+            },
+            {
+              "field": "job_opening",
+              "value": "={{ $json.data.custom_jobofferid_sugdate }}"
+            },
+            {
+              "field": "interview_round",
+              "value": "={{ $json.data.custom_interviewround_sugdate }}"
+            },
+            {
+              "field": "interview_details",
+              "value": "={{ [ { \"interviewer\": $json.data.custom_interviewer_sugdate[0].interviewer } ] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        1008
+      ],
+      "id": "e062f1d5-19d3-46d6-bfa9-4c9c01d80ff2",
+      "name": "Interview erstellen",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Timeslots/{{ $json.body.dataName_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        144,
+        1856
+      ],
+      "id": "73c87622-cdee-43e6-805e-e884e4b86d61",
+      "name": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1952
+      ],
+      "id": "7a0d6160-2a3a-4d24-b4b7-ab4cb3c6d67f",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alternativeslots-available",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        1856
+      ],
+      "id": "f24c595e-14ac-4659-834d-08a0de8eb143",
+      "name": "Webhook: Alternativtermine überprüft",
+      "webhookId": "10da0538-9fa2-4350-aa0f-7574b67c4913"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "02aeb806-92f6-4d4a-abbb-889a1a9e8bfd",
+              "leftValue": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_timeslots_sugdate.map(slot => slot.custom_status_tslot) }}\n\n",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        352,
+        1856
+      ],
+      "id": "98eb901a-34bf-4803-9cb2-a18a79a65202",
+      "name": "If: Pending (Ausstehend)"
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
+        "subject": "=Bestätigung des Rückzugs Ihrer Bewerbung als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Bestätigung über den Rückzug Ihrer Bewerbung\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>\n            \n            <p>vielen Dank für Ihre Nachricht und die offene Information, dass Sie Ihre Bewerbung für die Position als <strong>{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_designation_sugdate }}</strong> zurückziehen möchten.</p>\n            \n            <p>Wir bedauern Ihre Entscheidung sehr, da uns Ihr Profil angesprochen hat. Gleichzeitig respektieren wir Ihren Schritt und danken Ihnen für die Zeit, die Sie in das Verfahren investiert haben.</p>\n            \n            <p>Für Ihren weiteren beruflichen und privaten Lebensweg wünschen wir Ihnen alles Gute und viel Erfolg.</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1424,
+        784
+      ],
+      "id": "82375395-5e3a-4ee3-b844-82dfe5785423",
+      "name": "Send Email: Bestaetigung Rückzug Bewerber",
+      "webhookId": "64cc2b78-bec2-4d38-9a99-0d7fd440680b",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
+        "subject": "=Terminbestätigung Ihres Interviews als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        /* Styling für die Termin-Infobox */\n        .appointment-box {\n            background-color: #f8fafc;\n            border-left: 4px solid #16a34a;\n            padding: 20px;\n            margin: 25px 0;\n            border-radius: 0 6px 6px 0;\n        }\n        .appointment-box p {\n            margin: 5px 0;\n            font-size: 15px;\n        }\n        .appointment-box strong {\n            color: #111827;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Terminbestätigung für Ihr Vorstellungsgespräch\">\n\n        <!-- Body -->\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>\n            \n            <p>vielen Dank für die Bestätigung des Termins. Wir freuen uns sehr auf das gemeinsame Interview mit Ihnen.</p>\n            \n            <p>Hier sind noch einmal alle Details zu unserem vereinbarten Termin auf einen Blick:</p>\n            \n            <div class=\"appointment-box\">\n                <p><strong>Position:</strong>{{ $('Slot Akzeptiert').item.json.custom_designation_sugdate }}</p>\n                <p><strong>Ansprechpartner:</strong>{{ $('Slot Akzeptiert').item.json.owner }}</p>\n                <p><strong>Datum:</strong>{{ DateTime.fromISO($('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_interview_date_tslot).format('dd/MM/yyyy') }}</p>\n                <p><strong>Uhrzeit:</strong> {{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_start_time_tslot.toString().substring(0, 5) }} bis {{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_end_time_tslot.toString().substring(0, 5) }} Uhr</p>\n            </div>\n            \n            <p>Sollten sich Ihrerseits kurzfristig Änderungen ergeben oder Sie den Termin verschieben müssen, antworten Sie einfach direkt auf diese E-Mail, damit wir zeitnah eine Alternative finden können.</p>\n            \n            <p>Wir wünschen Ihnen bis dahin eine erfolgreiche Woche und freuen uns auf das Interview.</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('Slot Akzeptiert').item.json.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1824,
+        1008
+      ],
+      "id": "b5bb6b7f-2e5b-45ca-a9e9-1de3c8572e9f",
+      "name": "Send Email: Terminbestaetigung",
+      "webhookId": "e849d99d-a87c-46e5-9023-3ed3d4710e3d",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
+        "subject": "=Eingang Ihrer Wunschzeiten für die Position als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .info-status {\n            background-color: #f8fafc;\n            border-left: 4px solid #3b82f6; /* Blau signalisiert \"In Bearbeitung\" */\n            padding: 15px;\n            margin: 20px 0;\n            border-radius: 0 6px 6px 0;\n            font-size: 15px;\n            font-weight: 500;\n            color: #1e3a8a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Bestätigung über den Erhalt Ihrer Wunschzeiten\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>\n            \n            <p>wir haben Ihre vorgeschlagenen <strong>Wunschzeiten</strong> für das Interview erfolgreich erhalten.</p>\n            \n            <p>Unser HR-Team wird Ihre Wunschzeiten umgehend überpüfen. Wir werden uns zeitnah mit neuen, passenden Terminvorschlägen unter Berücksichtigung Ihrer Angaben wieder bei Ihnen melden.</p>\n            \n            <p>Sollten Sie in der Zwischenzeit dringende Fragen haben, können Sie einfach direkt auf diese E-Mail antworten.</p>\n            \n            <p>Wir wünschen Ihnen noch einen schönen Tag und melden uns in Kürze wieder!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        1232
+      ],
+      "id": "feae1e69-47cb-419d-ab8b-3b183608302e",
+      "name": "Send Email: Bestaetigung Wunschzeiten erhalten",
+      "webhookId": "c8bf9228-d8a0-43c7-b9e1-23c0a02b0f30",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_applicantmail_sugdate }}",
+        "subject": "=Neue Alternativ-Terminvorschläge für dein Interview als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Neue Terminvorschläge für Ihr Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Alternativtermine überprüft').item.json.body.vorname }} {{ $('Webhook: Alternativtermine überprüft').item.json.body.nachname }},</h1>\n            \n           <p>wir haben nun intern Ihre Wunschzeiten überprüft und unter Berücksichtigung dieser haben wir neue Termine erstellt.</p>\n\n<p>Bitte klicken Sie auf den folgenden Button, um einen der neu für Sie hinterlegten Termine direkt auszuwählen und zu bestätigen:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $('Webhook: Alternativtermine überprüft').item.json.body.Url }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt neuen Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sobald Sie sich für einen Termin entschieden haben, ist dieser fest für das Interview reserviert und Sie erhalten automatisch eine Bestätigung des Termins mit allen Details.</p>\n            \n            <p>Wir freuen uns sehr auf den gemeinsamen Austausch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        1744
+      ],
+      "id": "c9fa7cd6-15d7-4443-ac1c-5fd69e4f03d1",
+      "name": "Send Email: Verfuegbare Alternativtermine zusenden",
+      "webhookId": "68f53a66-7f00-4a55-a4aa-0714645096ed",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "201227b7-1977-4aaf-b827-82e4384160ee",
+              "leftValue": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.interview_round }}",
+              "rightValue": "Screening und Kennenlernen",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        -416
+      ],
+      "id": "626614bb-caeb-42ed-9ad8-2165de68c2c9",
+      "name": "If:Kennlerngespraech oder Fachgespraech"
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "subject": "=Einladung zum Interview als {{ $json.custom_designation_sugdate }} - JobID: {{ $json.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Einladung zum Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.vorname }} {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.nachname }} ,</h1>\n            \n            <p>vielen Dank für Ihre Bewerbung und das Interesse an einer Zusammenarbeit mit uns.</p>\n            \n            <p>Ihr Profil hat unser Interesse geweckt. Um tiefergehende Einblicke in Ihren Werdegang zu gewinnen und die Details der Position als <strong>{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.designation }}</strong> zu besprechen, laden wir Sie herzlich zu einem persönlichen <strong>Kennenlerngespräch</strong> ein.</p>\n            \n            <p>Um die Terminfindung für Sie so flexibel wie möglich zu gestalten, haben wir bereits einige passende Zeitfenster für Sie vorbereitet. Bitte klicken Sie auf den folgenden Link, <strong>um einen Termin zu bestätigen</strong>:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $json.custom_urlinterviewdates_sugdate }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sollte keiner der vorgeschlagenen Termine bei Ihnen passen, können Sie uns über dieselbe Seite auch ganz unkompliziert Ihre eigenen Wunschzeiten mitteilen.</p>\n            \n            <p>Wir freuen uns auf das Kennenlerngespräch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $json.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $json.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        -560
+      ],
+      "id": "6ae448d9-bd44-414e-a8d7-21b2bc6b8c49",
+      "name": "Send Email: Einladung Kennlerngespräch",
+      "webhookId": "a3ee9e15-9535-4bda-8a12-2725ef41e3d3",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "subject": "=Einladung zum Interview als {{ $json.custom_designation_sugdate }} - JobID: {{ $json.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Einladung zum Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.vorname }} {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.nachname }} ,</h1>\n            \n           <p>vielen Dank für das angenehme erste Kennenlernen und Ihr anhaltendes Interesse an einer Zusammenarbeit mit uns.</p>\n            \n<p>Ihr Profil und unser bisheriger Austausch haben uns sehr überzeugt. Um nun gemeinsam mit unserer Fachabteilung tiefer in die fachlichen Aspekte einzusteigen und die Ausgestaltung der Position als <strong>{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.designation }}</strong> im Detail zu besprechen, laden wir Sie herzlich zu einem zweiten Interview ein.</p>\n            \n            <p>Um die Terminfindung für Sie so flexibel wie möglich zu gestalten, haben wir bereits einige passende Zeitfenster für Sie vorbereitet. Bitte klicken Sie auf den folgenden Link, <strong>um einen Termin zu bestätigen</strong>:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $json.custom_urlinterviewdates_sugdate }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sollte keiner der vorgeschlagenen Termine bei Ihnen passen, können Sie uns über dieselbe Seite auch ganz unkompliziert Ihre eigenen Wunschzeiten mitteilen.</p>\n            \n            <p>Wir freuen uns auf das Kennenlerngespräch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $json.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $json.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        -320
+      ],
+      "id": "0fd2d9b0-c34c-4ed2-885d-19e7fa21e13c",
+      "name": "Send Email: Einladung Fachgespraech",
+      "webhookId": "a3ee9e15-9535-4bda-8a12-2725ef41e3d3",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "if \ntrue=Kennlerngespräch",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        896,
+        -544
+      ],
+      "id": "1df8c758-0285-453c-862c-008b01ec2a62",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "if false=Fachgespraech",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        896,
+        -304
+      ],
+      "id": "f300d6ad-f97b-421c-bf26-2df21fae6e52",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook:GET-Webseite Terminvorschlag": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Abfrage HASH erhalte name_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto: URL Hash generator": {
+      "main": [
+        [
+          {
+            "node": "Update Terminvorschlag HASH URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Bewerber Terminvorschlag Trigger": {
+      "main": [
+        [
+          {
+            "node": "Crypto: URL Hash generator",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request - Bewerberdaten abfrage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Abfrage HASH erhalte name_id": {
+      "main": [
+        [
+          {
+            "node": "Bewerbungstermine abholen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bewerbungstermine abholen": {
+      "main": [
+        [
+          {
+            "node": "If_check_alternative_dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Bewerberdaten abfrage": {
+      "main": [
+        [
+          {
+            "node": "Update Bewerberstatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook:Button Bestaetigen": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JS Code: Termin akzeptieren / ablehnen": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Update alle Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Update alle Slots": {
+      "main": [
+        [
+          {
+            "node": "Interview erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bewerberstatus auf \"Interview geplant\" gestellt": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code: Alle Slots abgelehnt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Alle Terminvorschlaege des Bewerbers holen": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_check_slot_accepted": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook_alternative_dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slot Akzeptiert": {
+      "main": [
+        [
+          {
+            "node": "Bewerberstatus auf \"Interview geplant\" gestellt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_check_alternative_dates": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If_check_slot_accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alle Interview holen": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Alle Slots abgelehnt": {
+      "main": [
+        [
+          {
+            "node": "Wunschtermin speichern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Terminvorschlag Datensatz entfernen": {
+      "main": [
+        [
+          {
+            "node": "Interview loeschen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bewerberstatus aendern und Grund angeben": {
+      "main": [
+        [
+          {
+            "node": "Terminvorschlag Datensatz entfernen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Bewerberstatus aendern und Grund angeben",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "JS Code: Termin akzeptieren / ablehnen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alle Interview holen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interview erstellen": {
+      "main": [
+        [
+          {
+            "node": "Slot Akzeptiert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1": {
+      "main": [
+        [
+          {
+            "node": "If: Pending (Ausstehend)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Alternativtermine überprüft": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Pending (Ausstehend)": {
+      "main": [
+        [],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Terminvorschlag HASH URL": {
+      "main": [
+        [
+          {
+            "node": "If:Kennlerngespraech oder Fachgespraech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3df35318-2d31-42ee-88bd-b91feac0e3d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "DktjNdtj6zxqmn85",
+  "tags": []
+}
