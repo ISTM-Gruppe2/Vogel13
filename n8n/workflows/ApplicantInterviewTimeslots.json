@@ -49,7 +49,7 @@
       "type": "n8n-nodes-base.crypto",
       "typeVersion": 2,
       "position": [
-        256,
+        176,
         -416
       ],
       "id": "df5cd037-c1ec-472f-b9bc-6dd264ac77f9",
@@ -128,37 +128,6 @@
     },
     {
       "parameters": {
-        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "erpNextApi",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "filters",
-              "value": "=[[\"name\",\"=\",\"{{ $json.body.email_id }}\"]]"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        256,
-        -208
-      ],
-      "id": "328c6c7e-6ad6-4c8d-86b3-c378534508c3",
-      "name": "HTTP Request - Bewerberdaten abfrage",
-      "credentials": {
-        "erpNextApi": {
-          "id": "trA9dhTurcxOP38C",
-          "name": "ERPNextBot"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "update",
         "docType": "Interview%20Timeslots",
         "documentName": "={{ $json.body.dataName_id }}",
@@ -178,40 +147,11 @@
       "type": "n8n-nodes-base.erpNext",
       "typeVersion": 1,
       "position": [
-        480,
+        384,
         -416
       ],
       "id": "9ee94fb3-87df-46d8-96b7-87d10bc019eb",
       "name": "Update Terminvorschlag HASH URL",
-      "credentials": {
-        "erpNextApi": {
-          "id": "trA9dhTurcxOP38C",
-          "name": "ERPNextBot"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "docType": "Job%20Applicant",
-        "documentName": "={{ $json.data[0].name }}",
-        "properties": {
-          "customProperty": [
-            {
-              "field": "status",
-              "value": "Einladung ausstehend"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.erpNext",
-      "typeVersion": 1,
-      "position": [
-        480,
-        -208
-      ],
-      "id": "4c4ea06c-3ab5-48d1-8b3f-8c6bd48ab2be",
-      "name": "Update Bewerberstatus",
       "credentials": {
         "erpNextApi": {
           "id": "trA9dhTurcxOP38C",
@@ -1014,7 +954,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        688,
+        816,
         -416
       ],
       "id": "626614bb-caeb-42ed-9ad8-2165de68c2c9",
@@ -1033,7 +973,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1088,
+        1248,
         -560
       ],
       "id": "6ae448d9-bd44-414e-a8d7-21b2bc6b8c49",
@@ -1059,7 +999,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1088,
+        1248,
         -320
       ],
       "id": "0fd2d9b0-c34c-4ed2-885d-19e7fa21e13c",
@@ -1081,7 +1021,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        896,
+        1056,
         -544
       ],
       "id": "1df8c758-0285-453c-862c-008b01ec2a62",
@@ -1096,11 +1036,47 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        896,
+        1056,
         -304
       ],
       "id": "f300d6ad-f97b-421c-bf26-2df21fae6e52",
       "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "Einladung ausstehend"
+            },
+            {
+              "name": "custom_invitation_senton",
+              "value": "={{ $json.custom_interviewer_sugdate[0].creation }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        -416
+      ],
+      "id": "89ef6b8d-f0c1-43f5-b884-b29a206a9cc3",
+      "name": "Update Bewerberstatus",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1134,11 +1110,6 @@
             "node": "Crypto: URL Hash generator",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "HTTP Request - Bewerberdaten abfrage",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -1159,17 +1130,6 @@
         [
           {
             "node": "If_check_alternative_dates",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request - Bewerberdaten abfrage": {
-      "main": [
-        [
-          {
-            "node": "Update Bewerberstatus",
             "type": "main",
             "index": 0
           }
@@ -1423,6 +1383,17 @@
       "main": [
         [
           {
+            "node": "Update Bewerberstatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Bewerberstatus": {
+      "main": [
+        [
+          {
             "node": "If:Kennlerngespraech oder Fachgespraech",
             "type": "main",
             "index": 0
@@ -1436,7 +1407,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "3df35318-2d31-42ee-88bd-b91feac0e3d8",
+  "versionId": "6de0fa88-8a32-4deb-98e4-7e1fe4467e6b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
