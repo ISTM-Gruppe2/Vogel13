@@ -11,7 +11,7 @@ This skill generates fully fictional applicant profiles for ERPNext-based recrui
 
 **Primary reference**: The complete rules live in `dummy_data/AGENTS.md`. When in doubt about any rule, boundary, or format, read that file first. This skill is a distillation, not a replacement.
 
-**Format reference**: Study an existing applicant before writing. A good reference is `dummy_data/applicants/cloud-platform-engineer/APP-0001_Lea_Mueller/APP-0001_Lea_Mueller_CV.yaml`.
+**Format reference**: If exists, study an existing applicant before writing.
 
 ## Pre-Generation Checks
 
