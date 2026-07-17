@@ -1,1 +1,4 @@
 .vscode/
+dummy_data/applicants/*
+dummy_data/job_openings/*
+dummy_data/interview_feedback/*
