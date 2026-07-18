@@ -16,10 +16,11 @@ The project explores how workflow automation tools and AI can improve tasks such
 - Administrative workflows
 - ERP-integrated HR processes
 
-## Technologies
+## Technological Framework
 
-The project may include technologies such as:
+For this project, the following tech stack must be used as the mandatory working environment:
 
-- n8n
-- ERPNext
-- AI/LLM integrations
+- Frappe Framework: v15.105.0
+- ERPNext: v15.104.3
+- Frappe HR: v15.59.0 – GitHub: <https://github.com/frappe/hrms>
+- n8n as the workflow automation platform.
