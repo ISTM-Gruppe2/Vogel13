@@ -1,0 +1,80 @@
+<mxfile host="Electron" modified="2026-05-19T22:08:16.482Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.18 Chrome/120.0.6099.199 Electron/28.1.2 Safari/537.36" version="22.1.18" etag="l3dqtF1eqU33T4fTLRxU" type="device">
+  <diagram name="Seite-1" id="Pyy2Q7WzAUF6MEMRCxKO">
+    <mxGraphModel dx="1818" dy="428" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;" edge="1" parent="1" target="Hb43xIQgfilCAt-lNZnk-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-330" y="660" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;" edge="1" parent="1" source="Hb43xIQgfilCAt-lNZnk-3" target="Hb43xIQgfilCAt-lNZnk-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-3" value="Offene Stelle&lt;br&gt;veröffentlicht" style="whiteSpace=wrap;html=1;rounded=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="-200" y="630" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;" edge="1" parent="1" source="Hb43xIQgfilCAt-lNZnk-5" target="Hb43xIQgfilCAt-lNZnk-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-5" value="Bewerberdaten&lt;br&gt;angelegt" style="whiteSpace=wrap;html=1;rounded=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="630" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-7" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;Kandidat &lt;br&gt;bewirbt sich&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="-50" y="623" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-9" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;Stellenangebot &lt;br&gt;erstellt&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="-310" y="623" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;" edge="1" parent="1" source="Hb43xIQgfilCAt-lNZnk-10" target="Hb43xIQgfilCAt-lNZnk-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-10" value="Lebenslauf Inhalte extrahieren&amp;nbsp;" style="whiteSpace=wrap;html=1;rounded=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="630" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-12" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;Lebenslauf&lt;br&gt;Webhook ausgelöst&amp;nbsp;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="620" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;" edge="1" parent="1" source="Hb43xIQgfilCAt-lNZnk-13" target="Hb43xIQgfilCAt-lNZnk-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-13" value="Bewerberprofil aktualisiert&amp;nbsp;" style="whiteSpace=wrap;html=1;rounded=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="623" y="630" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-15" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;n8n Workflow ausgelöst&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="632" width="135" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-16" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="645" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-19" value="Aktualisierte Felder" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="619" y="779" width="140" height="210" as="geometry">
+            <mxRectangle x="606" y="779" width="138" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-20" value="Berufsjahre" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="30" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-21" value="Höchster Abschluss" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="60" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-22" value="Skills" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="90" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-32" value="Sprachen" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="120" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-33" value="Zertifkate" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="150" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-31" value="Zusammenfassung CV" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;strokeWidth=1;" vertex="1" parent="Hb43xIQgfilCAt-lNZnk-19">
+          <mxGeometry y="180" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Hb43xIQgfilCAt-lNZnk-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.546;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=1;" edge="1" parent="1" source="Hb43xIQgfilCAt-lNZnk-19" target="Hb43xIQgfilCAt-lNZnk-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

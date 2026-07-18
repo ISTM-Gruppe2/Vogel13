@@ -1,0 +1,232 @@
+{
+  "exportedAt": "2026-07-18T16:31:05.261Z",
+  "source": "docmost",
+  "version": "0.80.2",
+  "pages": {
+    "Vogel13.md": {
+      "pageId": "019e31ca-c321-7287-afbc-ef660787446f",
+      "slugId": "gaXrPlr5sF",
+      "icon": "◼️",
+      "position": "Zz6cS",
+      "parentPath": null,
+      "createdAt": "2026-05-16T17:17:12.352Z",
+      "updatedAt": "2026-05-26T15:46:07.080Z"
+    },
+    "Vogel13/Setup.md": {
+      "pageId": "019e2cff-e3d7-7a31-aaaa-6a63fdd5e689",
+      "slugId": "iwPgFNcdZI",
+      "icon": "◼️",
+      "position": "Zy7rY",
+      "parentPath": "Vogel13.md",
+      "createdAt": "2026-05-15T18:57:08.053Z",
+      "updatedAt": "2026-05-27T12:51:54.048Z"
+    },
+    "Vogel13/Prozesse.md": {
+      "pageId": "019e31bb-bd23-7181-be04-0c07cf594ee6",
+      "slugId": "fZvRjYFxjo",
+      "icon": "◼️",
+      "position": "Zy6pK3zo",
+      "parentPath": "Vogel13.md",
+      "createdAt": "2026-05-16T17:00:47.778Z",
+      "updatedAt": "2026-05-23T20:57:22.778Z"
+    },
+    "Vogel13/API.md": {
+      "pageId": "019e2d5f-fbcb-7c98-8e09-fcb0fb3d673f",
+      "slugId": "DFJKGTRgWo",
+      "icon": "◼️",
+      "position": "ZzAFj",
+      "parentPath": "Vogel13.md",
+      "createdAt": "2026-05-15T20:42:05.642Z",
+      "updatedAt": "2026-05-27T12:51:55.894Z"
+    },
+    "Vogel13/Docmost.md": {
+      "pageId": "019e2d2c-b87e-7e7f-87b9-142caa97ce41",
+      "slugId": "cQbKvNCx1h",
+      "icon": "◼️",
+      "position": "Zy45I7WJ",
+      "parentPath": "Vogel13.md",
+      "createdAt": "2026-05-15T19:46:06.075Z",
+      "updatedAt": "2026-05-26T15:28:59.917Z"
+    },
+    "Vogel13/Datenaufbereitung.md": {
+      "pageId": "019e3560-3965-7158-8273-84614a5977f2",
+      "slugId": "tpHliAkDlZ",
+      "icon": "◼️",
+      "position": "Zy5slAcp",
+      "parentPath": "Vogel13.md",
+      "createdAt": "2026-05-17T09:59:19.137Z",
+      "updatedAt": "2026-05-23T20:59:36.734Z"
+    },
+    "Vogel13/Datenaufbereitung/Bewerbungsgespr%C3%A4chstypen.md": {
+      "pageId": "019e5bf4-5069-77b6-9f15-a9d4579f3c16",
+      "slugId": "z65e4ubmn5",
+      "icon": "◼️",
+      "position": "a0BzM",
+      "parentPath": "Vogel13/Datenaufbereitung.md",
+      "createdAt": "2026-05-24T21:46:38.567Z",
+      "updatedAt": "2026-05-24T21:50:35.077Z"
+    },
+    "Vogel13/Datenaufbereitung/Berwerbungsformular.md": {
+      "pageId": "019e5fb1-d6cf-767b-b935-29998846c6eb",
+      "slugId": "tgQxV8rYwO",
+      "icon": "◼️",
+      "position": "a1B65",
+      "parentPath": "Vogel13/Datenaufbereitung.md",
+      "createdAt": "2026-05-25T15:12:30.926Z",
+      "updatedAt": "2026-05-27T12:05:04.747Z"
+    },
+    "Vogel13/Datenaufbereitung/Bewerbungsgespr%C3%A4chstypen/Interview-Runden.md": {
+      "pageId": "019e5bf8-94e0-7b48-a751-de27be630384",
+      "slugId": "aus4CqRNFW",
+      "icon": "◼️",
+      "position": "a0Bhj",
+      "parentPath": "Vogel13/Datenaufbereitung/Bewerbungsgespr%C3%A4chstypen.md",
+      "createdAt": "2026-05-24T21:51:18.239Z",
+      "updatedAt": "2026-05-24T21:56:38.808Z"
+    },
+    "Vogel13/Docmost/Backup%20Workflow.md": {
+      "pageId": "019e2d7e-4d60-7a83-bff2-0db0d79dfc32",
+      "slugId": "Y0477oW1Mo",
+      "icon": "◼️",
+      "position": "a06a3",
+      "parentPath": "Vogel13/Docmost.md",
+      "createdAt": "2026-05-15T21:15:12.605Z",
+      "updatedAt": "2026-05-17T09:34:11.432Z"
+    },
+    "Vogel13/Prozesse/Lebenslauf-Extraktion%20%22Bewerber%22.md": {
+      "pageId": "019e41ce-1b62-7d5c-aef7-69d45aba15b9",
+      "slugId": "vqXHZuLNns",
+      "icon": "◼️",
+      "position": "a29rF",
+      "parentPath": "Vogel13/Prozesse.md",
+      "createdAt": "2026-05-19T19:54:47.007Z",
+      "updatedAt": "2026-05-27T08:50:43.622Z"
+    },
+    "Vogel13/Prozesse/%C3%9Cberblick.md": {
+      "pageId": "019e5666-f727-7ccd-9dc0-00ace4c9ad3b",
+      "slugId": "KeLj710Xe9",
+      "icon": "◼️",
+      "position": "ZzAkx",
+      "parentPath": "Vogel13/Prozesse.md",
+      "createdAt": "2026-05-23T19:54:09.060Z",
+      "updatedAt": "2026-07-14T17:58:25.069Z"
+    },
+    "Vogel13/Prozesse/Bewerberscoring.md": {
+      "pageId": "019e416d-8004-7971-94fb-8fbc028b0349",
+      "slugId": "IX3JAZINOw",
+      "icon": "◼️",
+      "position": "a152A",
+      "parentPath": "Vogel13/Prozesse.md",
+      "createdAt": "2026-05-19T18:09:15.777Z",
+      "updatedAt": "2026-05-27T08:50:41.818Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md": {
+      "pageId": "019e31ce-808f-71aa-9d9c-0e6a198daa90",
+      "slugId": "wxyHroHN3U",
+      "icon": "◼️",
+      "position": "a04A8",
+      "parentPath": "Vogel13/Prozesse.md",
+      "createdAt": "2026-05-16T17:21:17.454Z",
+      "updatedAt": "2026-06-27T14:24:03.957Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess/Bewerberstatus%C3%A4nderungen%3A%20KI-Mail-Assistent%20%26%20Automatisierte%20Bewerbungsgespr%C3%A4ch%20generierung.md": {
+      "pageId": "019e6688-3800-713b-84d0-70843c7301fb",
+      "slugId": "54L7d1USrZ",
+      "icon": "◼️",
+      "position": "a0AD4",
+      "parentPath": "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md",
+      "createdAt": "2026-05-26T23:04:23.840Z",
+      "updatedAt": "2026-05-27T10:31:56.896Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess/Analyse%20von%20Interview-Feedback%20zur%20Vertragsvorbereitung.md": {
+      "pageId": "019e5b36-015f-7bbe-88fe-cd8c9540853f",
+      "slugId": "NJ4bb81psO",
+      "icon": "◼️",
+      "position": "ZyC8i",
+      "parentPath": "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md",
+      "createdAt": "2026-05-24T18:18:46.494Z",
+      "updatedAt": "2026-06-13T08:03:18.548Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess/Bewerberscoring%20und%20Criteria%20Mapping.md": {
+      "pageId": "019e6657-5255-75f4-9dd1-246ae5fc26c6",
+      "slugId": "3vHdaxN3i4",
+      "icon": "◼️",
+      "position": "ZzkQk",
+      "parentPath": "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md",
+      "createdAt": "2026-05-26T22:10:59.281Z",
+      "updatedAt": "2026-05-27T08:47:47.555Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess/Generierung%20von%20Stellenausschreibungen.md": {
+      "pageId": "019e651c-ce6a-7e39-be1e-5ed3a197b039",
+      "slugId": "hNpx1B3hNn",
+      "icon": "◼️",
+      "position": "ZzxJu7Vi",
+      "parentPath": "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md",
+      "createdAt": "2026-05-26T16:27:27.208Z",
+      "updatedAt": "2026-07-17T20:39:36.882Z"
+    },
+    "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess/Lebenslauf-Extraktion%20%22Bewerber%22.md": {
+      "pageId": "019e6902-5963-77ab-b270-ecace27458e4",
+      "slugId": "348QKNx8NS",
+      "icon": "◼️",
+      "position": "a1657",
+      "parentPath": "Vogel13/Prozesse/AI%20im%20Recruiting-Prozess.md",
+      "createdAt": "2026-05-27T10:37:02.200Z",
+      "updatedAt": "2026-05-27T11:53:01.970Z"
+    },
+    "Vogel13/Prozesse/%C3%9Cberblick/Prozess%20UML.md": {
+      "pageId": "019f6bd0-5669-7fcb-91ba-bfbaad2af3cd",
+      "slugId": "9NqL6wH4Ur",
+      "icon": null,
+      "position": "a002M",
+      "parentPath": "Vogel13/Prozesse/%C3%9Cberblick.md",
+      "createdAt": "2026-07-16T16:44:03.558Z",
+      "updatedAt": "2026-07-16T19:12:22.313Z"
+    },
+    "Vogel13/Setup/Gmail-Setup%20f%C3%BCr%20n8n.md": {
+      "pageId": "019e2d32-ef5c-7fb2-b40a-61e309c0739b",
+      "slugId": "ERThchjCx1",
+      "icon": "◼️",
+      "position": "a04z6",
+      "parentPath": "Vogel13/Setup.md",
+      "createdAt": "2026-05-15T19:52:53.340Z",
+      "updatedAt": "2026-05-27T12:51:58.627Z"
+    },
+    "Vogel13/Setup/ERPNext%20API-Schl%C3%BCssel%20f%C3%BCr%20n8n.md": {
+      "pageId": "019e2d56-fbdb-7785-9814-2a58748dc449",
+      "slugId": "ujB4xrREDb",
+      "icon": "◼️",
+      "position": "a1Avo",
+      "parentPath": "Vogel13/Setup.md",
+      "createdAt": "2026-05-15T20:32:15.834Z",
+      "updatedAt": "2026-05-27T12:52:00.164Z"
+    },
+    "Vogel13/Setup/OpenRouter%20API-Schl%C3%BCssel%20f%C3%BCr%20n8n.md": {
+      "pageId": "019e309b-502e-7385-aa71-45f68840d89c",
+      "slugId": "Y9O69LWfve",
+      "icon": "◼️",
+      "position": "a21ig",
+      "parentPath": "Vogel13/Setup.md",
+      "createdAt": "2026-05-16T11:45:45.515Z",
+      "updatedAt": "2026-05-27T12:52:01.564Z"
+    },
+    "Vogel13/Setup/Repo%20Wechsel.md": {
+      "pageId": "019e60a2-0721-7196-9d63-0c5bce135762",
+      "slugId": "SCM9JErZZs",
+      "icon": "◼️",
+      "position": "a329g",
+      "parentPath": "Vogel13/Setup.md",
+      "createdAt": "2026-05-25T19:34:51.936Z",
+      "updatedAt": "2026-05-27T12:52:02.937Z"
+    },
+    "Vogel13/Setup/ERPNext%20Backup%20Workflow%20(Draft).md": {
+      "pageId": "019e5ed8-3187-7221-b00c-dde9ed80447d",
+      "slugId": "vIpz1swnzG",
+      "icon": "◼️",
+      "position": "a43QS",
+      "parentPath": "Vogel13/Setup.md",
+      "createdAt": "2026-05-25T11:14:47.332Z",
+      "updatedAt": "2026-05-27T12:52:04.572Z"
+    }
+  }
+}

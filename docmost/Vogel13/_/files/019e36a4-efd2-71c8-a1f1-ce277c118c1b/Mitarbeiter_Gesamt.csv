@@ -1,0 +1,106 @@
+ID,Nummernkreis,Vorname,Geschlecht,Geburtsdatum,Eintrittsdatum,Status,Unternehmen,Anrede,Nachname,Abteilung,Position,Betrieb
+HR-EMP-00001,HR-EMP-,Dina,Female,1983-01-06,2024-11-05,Active,Universität Duisburg-Essen Consulting,Ms,Kaplan,Business Consulting - UDEC,IT Consultant,Consulting Operations
+HR-EMP-00002,HR-EMP-,Dominik,Male,1997-10-09,2025-06-01,Active,Universität Duisburg-Essen Consulting,Mr,Harris,Business Consulting - UDEC,IT Consultant,Consulting Operations
+HR-EMP-00003,HR-EMP-,Daniel,Male,1991-10-10,2026-04-11,Active,Universität Duisburg-Essen Consulting,Mr,Cattaneo,Business Consulting - UDEC,IT Consultant,Consulting Operations
+HR-EMP-00004,HR-EMP-,Rashid,Male,1998-10-16,2022-01-02,Active,Universität Duisburg-Essen Consulting,Mr,Martin,Business Consulting - UDEC,Junior Consultant,Consulting Operations
+HR-EMP-00005,HR-EMP-,Mariam,Female,1975-11-16,2022-08-18,Active,Universität Duisburg-Essen Consulting,Ms,Mustafa,Business Consulting - UDEC,Junior Consultant,Consulting Operations
+HR-EMP-00006,HR-EMP-,Claudia,Female,1985-09-28,2022-04-29,Active,Universität Duisburg-Essen Consulting,Ms,Güler,Business Consulting - UDEC,Junior Consultant,Consulting Operations
+HR-EMP-00007,HR-EMP-,Jan,Male,1978-11-04,2026-02-07,Active,Universität Duisburg-Essen Consulting,Mr,Thomas,Business Consulting - UDEC,Senior Consultant,Consulting Operations
+HR-EMP-00008,HR-EMP-,Lea,Female,1998-11-23,2026-04-18,Active,Universität Duisburg-Essen Consulting,Ms,Sommer,Business Consulting - UDEC,Senior Consultant,Consulting Operations
+HR-EMP-00009,HR-EMP-,Andreas,Male,1996-04-27,2025-01-30,Active,Universität Duisburg-Essen Consulting,Mr,Frank,Business Consulting - UDEC,Senior Consultant,Consulting Operations
+HR-EMP-00010,HR-EMP-,Omar,Male,1998-09-02,2025-05-27,Active,Universität Duisburg-Essen Consulting,Mr,Roth,Technology Consulting - UDEC,Solution Consultant,Consulting Operations
+HR-EMP-00011,HR-EMP-,Nour,Female,1999-03-11,2026-03-27,Active,Universität Duisburg-Essen Consulting,Ms,Eroglu,Technology Consulting - UDEC,Technical Consultant,Consulting Operations
+HR-EMP-00012,HR-EMP-,Philipp,Male,1992-11-24,2025-10-07,Active,Universität Duisburg-Essen Consulting,Mr,Jashari,Technology Consulting - UDEC,Enterprise Architect,Consulting Operations
+HR-EMP-00013,HR-EMP-,Kaltrina,Female,1998-03-20,2024-07-13,Active,Universität Duisburg-Essen Consulting,Ms,Müller,Data & Analytics - UDEC,Data Analyst,Consulting Operations
+HR-EMP-00014,HR-EMP-,Kemal,Male,1985-01-29,2022-05-12,Active,Universität Duisburg-Essen Consulting,Mr,Al-Rashid,Data & Analytics - UDEC,Data Analyst,Consulting Operations
+HR-EMP-00015,HR-EMP-,Anna,Female,1999-11-06,2023-04-17,Active,Universität Duisburg-Essen Consulting,Ms,Ricci,Data & Analytics - UDEC,BI Consultant,Consulting Operations
+HR-EMP-00016,HR-EMP-,Lukas,Male,1978-03-09,2025-12-20,Active,Universität Duisburg-Essen Consulting,Mr,Maier,Data & Analytics - UDEC,Data Engineer,Consulting Operations
+HR-EMP-00017,HR-EMP-,Julian,Male,1978-01-09,2022-03-06,Active,Universität Duisburg-Essen Consulting,Mr,Jackson,Data & Analytics - UDEC,Data Scientist,Consulting Operations
+HR-EMP-00018,HR-EMP-,Sophie,Female,1998-01-23,2023-05-03,Active,Universität Duisburg-Essen Consulting,Ms,Schwarz,Cloud & Infrastructure - UDEC,Cloud Consultant,Delivery
+HR-EMP-00019,HR-EMP-,Mariam,Female,1984-08-11,2025-01-09,Active,Universität Duisburg-Essen Consulting,Ms,Bytyqi,Cloud & Infrastructure - UDEC,Cloud Consultant,Delivery
+HR-EMP-00020,HR-EMP-,Omar,Male,1985-11-25,2024-08-26,Active,Universität Duisburg-Essen Consulting,Mr,Lehmann,Cloud & Infrastructure - UDEC,System Engineer,Delivery
+HR-EMP-00021,HR-EMP-,Hana,Female,1979-03-26,2022-07-18,Active,Universität Duisburg-Essen Consulting,Ms,Woźniak,Cloud & Infrastructure - UDEC,DevOps Engineer,Delivery
+HR-EMP-00022,HR-EMP-,Miriam,Female,1993-12-31,2024-04-21,Active,Universität Duisburg-Essen Consulting,Ms,White,Cloud & Infrastructure - UDEC,DevOps Engineer,Delivery
+HR-EMP-00023,HR-EMP-,Julia,Female,1979-06-01,2022-05-05,Active,Universität Duisburg-Essen Consulting,Ms,Hoxha,Cloud & Infrastructure - UDEC,Infrastructure Architect,Delivery
+HR-EMP-00024,HR-EMP-,Stefanie,Female,1979-11-26,2023-05-25,Active,Universität Duisburg-Essen Consulting,Ms,Jones,Cyber Security - UDEC,Security Analyst,Delivery
+HR-EMP-00025,HR-EMP-,Alexander,Male,1999-01-21,2024-07-07,Active,Universität Duisburg-Essen Consulting,Mr,Taylor,Cyber Security - UDEC,Security Analyst,Delivery
+HR-EMP-00026,HR-EMP-,Driton,Male,1983-03-26,2023-07-25,Active,Universität Duisburg-Essen Consulting,Mr,Garcia,Cyber Security - UDEC,Security Consultant,Delivery
+HR-EMP-00027,HR-EMP-,Elena,Female,1978-05-20,2024-06-26,Active,Universität Duisburg-Essen Consulting,Ms,Fischer,Cyber Security - UDEC,Senior Security Consultant,Delivery
+HR-EMP-00028,HR-EMP-,Finn,Male,1999-04-01,2022-01-31,Active,Universität Duisburg-Essen Consulting,Mr,Demir,Cyber Security - UDEC,Security Manager,Management
+HR-EMP-00029,HR-EMP-,Mehmet,Male,1982-06-17,2024-04-12,Active,Universität Duisburg-Essen Consulting,Mr,Moore,PMO / Project Management Office - UDEC,Project Coordinator,Delivery
+HR-EMP-00030,HR-EMP-,Leila,Female,1984-08-03,2024-04-01,Active,Universität Duisburg-Essen Consulting,Ms,Rossi,PMO / Project Management Office - UDEC,Project Coordinator,Delivery
+HR-EMP-00031,HR-EMP-,Simon,Male,1992-01-01,2022-01-05,Active,Universität Duisburg-Essen Consulting,Mr,Erdogan,PMO / Project Management Office - UDEC,Program Manager,Management
+HR-EMP-00032,HR-EMP-,Luisa,Female,1995-05-30,2023-08-08,Active,Universität Duisburg-Essen Consulting,Ms,Bulut,PMO / Project Management Office - UDEC,PMO Lead,Management
+HR-EMP-00033,HR-EMP-,Mariam,Female,1981-12-11,2023-01-24,Active,Universität Duisburg-Essen Consulting,Ms,Brandt,Sales & Business Development - UDEC,Account Executive,Consulting Operations
+HR-EMP-00034,HR-EMP-,Nour,Female,1977-08-16,2025-04-01,Active,Universität Duisburg-Essen Consulting,Ms,Bashir,Sales & Business Development - UDEC,Account Executive,Consulting Operations
+HR-EMP-00035,HR-EMP-,Sebastian,Male,1977-07-25,2022-04-13,Active,Universität Duisburg-Essen Consulting,Mr,Martinez,Sales & Business Development - UDEC,Sales Manager,Management
+HR-EMP-00036,HR-EMP-,Dina,Female,1998-10-28,2022-11-19,Active,Universität Duisburg-Essen Consulting,Ms,Kowalski,HR & People Operations - UDEC,Talent Acquisition Manager,Internal Services
+HR-EMP-00037,HR-EMP-,Youssef,Male,1978-08-05,2023-01-16,Active,Universität Duisburg-Essen Consulting,Mr,Szymański,HR & People Operations - UDEC,HR Business Partner,Internal Services
+HR-EMP-00038,HR-EMP-,Max,Male,1985-07-20,2024-04-06,Active,Universität Duisburg-Essen Consulting,Mr,Rama,HR & People Operations - UDEC,HR Business Partner,Internal Services
+HR-EMP-00039,HR-EMP-,Kemal,Male,2000-12-20,2025-05-02,Active,Universität Duisburg-Essen Consulting,Mr,Lewandowski,Finance & Controlling - UDEC,Controller,Internal Services
+HR-EMP-00040,HR-EMP-,Jan,Male,1993-10-21,2025-09-08,Active,Universität Duisburg-Essen Consulting,Mr,Özcan,Finance & Controlling - UDEC,Finance Assistant,Internal Services
+HR-EMP-00041,HR-EMP-,Luisa,Female,1984-02-29,2025-10-03,Active,Universität Duisburg-Essen Consulting,Ms,Syla,Marketing & Communications - UDEC,Content Manager,Internal Services
+HR-EMP-00042,HR-EMP-,Chiara,Female,1986-11-30,2024-03-21,Active,Universität Duisburg-Essen Consulting,Ms,Santoro,Marketing & Communications - UDEC,Brand Manager,Internal Services
+HR-EMP-00043,HR-EMP-,Dominik,Male,1995-07-06,2023-10-10,Active,Universität Duisburg-Essen Consulting,Mr,Ferrari,Internal IT & Support - UDEC,IT Support Specialist,Internal Services
+HR-EMP-00044,HR-EMP-,Jonas,Male,1995-07-23,2025-06-26,Active,Universität Duisburg-Essen Consulting,Mr,Schröder,Internal IT & Support - UDEC,System Administrator,Internal Services
+HR-EMP-00045,HR-EMP-,Tim,Male,1999-02-12,2023-03-13,Active,Universität Duisburg-Essen Consulting,Mr,Moretti,Internal IT & Support - UDEC,IT Service Manager,Internal Services
+HR-EMP-00046,HR-EMP-,Sabine,Female,1990-08-28,2022-05-21,Active,Universität Duisburg-Essen Consulting,Ms,Ceku,Quality Assurance / Testing - UDEC,QA Analyst,Delivery
+HR-EMP-00047,HR-EMP-,Ralf,Male,1987-10-14,2022-11-20,Active,Universität Duisburg-Essen Consulting,Mr,Schulte,Quality Assurance / Testing - UDEC,QA Analyst,Delivery
+HR-EMP-00048,HR-EMP-,Nadia,Female,1988-07-27,2025-06-06,Active,Universität Duisburg-Essen Consulting,Ms,Qureshi,Quality Assurance / Testing - UDEC,Test Engineer,Delivery
+HR-EMP-00049,HR-EMP-,Dominik,Male,1979-08-25,2022-10-03,Active,Universität Duisburg-Essen Consulting,Mr,Bruno,Quality Assurance / Testing - UDEC,Test Engineer,Delivery
+HR-EMP-00050,HR-EMP-,Katharina,Female,1979-10-20,2026-03-01,Active,Universität Duisburg-Essen Consulting,Ms,Yildiz,Quality Assurance / Testing - UDEC,Test Manager,Delivery
+HR-EMP-00051,HR-EMP-,Hassan,Male,1987-08-22,2025-05-23,Active,Universität Duisburg-Essen Consulting,Mr,Brown,Operations & Delivery - UDEC,Delivery Manager,Management
+HR-EMP-00052,HR-EMP-,Lars,Male,1984-02-18,2025-11-08,Active,Universität Duisburg-Essen Consulting,Mr,Marino,Operations & Delivery - UDEC,Operations Analyst,Delivery
+HR-EMP-00053,HR-EMP-,Dina,Female,1996-11-30,2023-05-30,Active,Universität Duisburg-Essen Consulting,Ms,Rexha,Business Consulting - UDEC,Practice Lead,Management
+HR-EMP-00054,HR-EMP-,Tobias,Male,1993-12-31,2023-07-21,Active,Universität Duisburg-Essen Consulting,Mr,Herrmann,Data & Analytics - UDEC,Analytics Lead,Management
+HR-EMP-00055,HR-EMP-,Lukas,Male,1989-12-17,2026-04-29,Active,Universität Duisburg-Essen Consulting,Mr,Kamiński,Software Development - UDEC,Tech Lead,Management
+HR-EMP-00056,HR-EMP-,Omar,Male,1982-04-01,2026-02-27,Active,Universität Duisburg-Essen Consulting,Mr,Weber,Software Development - UDEC,Senior Developer,Delivery
+HR-EMP-00057,HR-EMP-,Gëzime,Female,2000-02-28,2022-01-20,Active,Universität Duisburg-Essen Consulting,Ms,Neumann,Software Development - UDEC,Senior Developer,Delivery
+HR-EMP-00058,HR-EMP-,Tim,Male,1981-09-08,2025-01-22,Active,Universität Duisburg-Essen Consulting,Mr,Schmitt,Software Development - UDEC,Junior Developer,Delivery
+HR-EMP-00059,HR-EMP-,Ralf,Male,1999-10-14,2022-10-31,Active,Universität Duisburg-Essen Consulting,Mr,Kurt,Software Development - UDEC,Junior Developer,Delivery
+HR-EMP-00060,HR-EMP-,Sabine,Female,1976-11-16,2023-09-24,Active,Universität Duisburg-Essen Consulting,Ms,Yilmaz,Software Development - UDEC,Junior Developer,Delivery
+HR-EMP-00061,HR-EMP-,Sarah,Female,1973-01-10,2023-03-07,Active,Universität Duisburg-Essen Consulting,Ms,Schneider,Management & Leadership - UDEC,Chief Executive Officer,Management
+HR-EMP-00062,HR-EMP-,Markus,Male,1972-12-07,2025-02-20,Active,Universität Duisburg-Essen Consulting,Mr,Kaya,Finance & Controlling - UDEC,Chief Financial Officer,Management
+HR-EMP-00063,HR-EMP-,Jana,Female,1970-04-24,2022-11-29,Active,Universität Duisburg-Essen Consulting,Ms,Klein,Management & Leadership - UDEC,Chief Operating Officer,Management
+HR-EMP-00064,HR-EMP-,Ardian,Male,1965-07-23,2023-01-03,Active,Universität Duisburg-Essen Consulting,Mr,Robinson,Technology Consulting - UDEC,Chief Technology Officer,Management
+HR-EMP-00065,HR-EMP-,Drita,Female,1982-12-29,2025-10-03,Active,Universität Duisburg-Essen Consulting,Ms,Berger,Management & Leadership - UDEC,Managing Director,Management
+HR-EMP-00066,HR-EMP-,Hassan,Male,1968-07-28,2025-12-07,Active,Universität Duisburg-Essen Consulting,Mr,Farouk,Management & Leadership - UDEC,Vice President,Management
+HR-EMP-00067,HR-EMP-,Frank,Male,1965-11-14,2024-08-21,Active,Universität Duisburg-Essen Consulting,Mr,Gashi,Management & Leadership - UDEC,Vice President,Management
+HR-EMP-00068,HR-EMP-,Benjamin,Male,1975-04-29,2023-12-18,Active,Universität Duisburg-Essen Consulting,Mr,Halili,Management & Leadership - UDEC,President,Management
+HR-EMP-00069,HR-EMP-,Rania,Female,1984-12-31,2022-02-18,Active,Universität Duisburg-Essen Consulting,Ms,Thompson,Operations & Delivery - UDEC,Manager,Management
+HR-EMP-00070,HR-EMP-,Arben,Male,1989-09-22,2023-07-25,Active,Universität Duisburg-Essen Consulting,Mr,Preteni,Operations & Delivery - UDEC,Manager,Management
+HR-EMP-00071,HR-EMP-,Sven,Male,1990-10-02,2025-08-06,Active,Universität Duisburg-Essen Consulting,Mr,Huber,HR & People Operations - UDEC,HR Manager,Internal Services
+HR-EMP-00072,HR-EMP-,Rana,Female,1989-11-08,2022-02-26,Active,Universität Duisburg-Essen Consulting,Ms,Rizzo,Finance & Controlling - UDEC,Finance Manager,Internal Services
+HR-EMP-00073,HR-EMP-,Omar,Male,1983-01-04,2025-04-04,Active,Universität Duisburg-Essen Consulting,Mr,Krüger,Marketing & Communications - UDEC,Marketing Manager,Internal Services
+HR-EMP-00074,HR-EMP-,Laura,Female,1967-06-08,2025-05-06,Active,Universität Duisburg-Essen Consulting,Ms,Hoffmann,Marketing & Communications - UDEC,Head of Marketing and Sales,Management
+HR-EMP-00075,HR-EMP-,Nicole,Female,1989-01-26,2024-06-12,Active,Universität Duisburg-Essen Consulting,Ms,Kaiser,Business Consulting - UDEC,Product Manager,Management
+HR-EMP-00076,HR-EMP-,Günter,Male,2000-11-11,2023-01-25,Active,Universität Duisburg-Essen Consulting,Mr,Mansour,Business Consulting - UDEC,Product Manager,Management
+HR-EMP-00077,HR-EMP-,Sarah,Female,1994-07-24,2022-01-04,Active,Universität Duisburg-Essen Consulting,Ms,Nowak,PMO / Project Management Office - UDEC,Project Manager,Delivery
+HR-EMP-00078,HR-EMP-,Wolfgang,Male,1994-05-07,2022-05-24,Active,Universität Duisburg-Essen Consulting,Mr,Walter,PMO / Project Management Office - UDEC,Project Manager,Delivery
+HR-EMP-00079,HR-EMP-,Johanna,Female,1980-08-03,2026-01-14,Active,Universität Duisburg-Essen Consulting,Ms,Miller,Sales & Business Development - UDEC,Business Development Manager,Consulting Operations
+HR-EMP-00080,HR-EMP-,Dina,Female,1988-11-15,2025-09-27,Active,Universität Duisburg-Essen Consulting,Ms,Colombo,Business Consulting - UDEC,Business Analyst,Consulting Operations
+HR-EMP-00081,HR-EMP-,Franziska,Female,1993-01-18,2025-11-28,Active,Universität Duisburg-Essen Consulting,Ms,Fontana,Business Consulting - UDEC,Business Analyst,Consulting Operations
+HR-EMP-00082,HR-EMP-,Sabine,Female,1983-08-10,2024-05-11,Active,Universität Duisburg-Essen Consulting,Ms,Johnson,Data & Analytics - UDEC,Analyst,Consulting Operations
+HR-EMP-00083,HR-EMP-,Zeynep,Female,2000-07-12,2023-09-09,Active,Universität Duisburg-Essen Consulting,Ms,Ferrara,Data & Analytics - UDEC,Analyst,Consulting Operations
+HR-EMP-00084,HR-EMP-,Emma,Female,1988-08-18,2023-08-11,Active,Universität Duisburg-Essen Consulting,Ms,Wiśniewski,Business Consulting - UDEC,Consultant,Consulting Operations
+HR-EMP-00085,HR-EMP-,Fitim,Male,1989-06-15,2024-08-10,Active,Universität Duisburg-Essen Consulting,Mr,Meta,Business Consulting - UDEC,Consultant,Consulting Operations
+HR-EMP-00086,HR-EMP-,Kaltrina,Female,1984-08-02,2024-11-12,Active,Universität Duisburg-Essen Consulting,Ms,Conti,Business Consulting - UDEC,Associate,Consulting Operations
+HR-EMP-00087,HR-EMP-,Fatima,Female,1978-10-21,2023-08-05,Active,Universität Duisburg-Essen Consulting,Ms,Zieliński,Business Consulting - UDEC,Associate,Consulting Operations
+HR-EMP-00088,HR-EMP-,Maja,Female,1985-07-15,2025-10-09,Active,Universität Duisburg-Essen Consulting,Ms,Meier,Software Development - UDEC,Software Developer,Delivery
+HR-EMP-00089,HR-EMP-,Yasmin,Female,1983-12-07,2022-10-29,Active,Universität Duisburg-Essen Consulting,Ms,Osmani,Software Development - UDEC,Software Developer,Delivery
+HR-EMP-00090,HR-EMP-,Elias,Male,1985-12-25,2024-08-31,Active,Universität Duisburg-Essen Consulting,Mr,Barbieri,Cloud & Infrastructure - UDEC,Engineer,Delivery
+HR-EMP-00091,HR-EMP-,Kujtim,Male,1993-08-04,2025-07-13,Active,Universität Duisburg-Essen Consulting,Mr,Khalil,Cloud & Infrastructure - UDEC,Engineer,Delivery
+HR-EMP-00092,HR-EMP-,Günter,Male,1997-03-05,2024-03-29,Active,Universität Duisburg-Essen Consulting,Mr,Russo,Marketing & Communications - UDEC,Designer,Internal Services
+HR-EMP-00093,HR-EMP-,Christian,Male,1975-04-01,2026-03-18,Active,Universität Duisburg-Essen Consulting,Mr,Lange,Data & Analytics - UDEC,Researcher,Consulting Operations
+HR-EMP-00094,HR-EMP-,Driton,Male,1984-10-25,2022-12-27,Active,Universität Duisburg-Essen Consulting,Mr,Demiri,Marketing & Communications - UDEC,Marketing Specialist,Internal Services
+HR-EMP-00095,HR-EMP-,Julia,Female,2000-01-02,2023-05-26,Active,Universität Duisburg-Essen Consulting,Ms,Möller,Marketing & Communications - UDEC,Marketing Specialist,Internal Services
+HR-EMP-00096,HR-EMP-,Kujtim,Male,1980-12-24,2024-08-09,Active,Universität Duisburg-Essen Consulting,Mr,Lushi,Sales & Business Development - UDEC,Sales Representative,Consulting Operations
+HR-EMP-00097,HR-EMP-,Kaltrina,Female,1997-08-23,2024-05-23,Active,Universität Duisburg-Essen Consulting,Ms,Ahmeti,Sales & Business Development - UDEC,Sales Representative,Consulting Operations
+HR-EMP-00098,HR-EMP-,Ayse,Female,1996-04-17,2024-07-10,Active,Universität Duisburg-Essen Consulting,Ms,Lang,Finance & Controlling - UDEC,Accountant,Internal Services
+HR-EMP-00099,HR-EMP-,Elena,Female,1987-06-10,2026-04-18,Active,Universität Duisburg-Essen Consulting,Ms,Haddad,Verwaltung - UDEC,Administrative Assistant,Internal Services
+HR-EMP-00100,HR-EMP-,Chiara,Female,1987-04-27,2024-06-19,Active,Universität Duisburg-Essen Consulting,Ms,Schäfer,Verwaltung - UDEC,Administrative Assistant,Internal Services
+HR-EMP-00101,HR-EMP-,Luca,Male,1985-07-08,2023-07-11,Active,Universität Duisburg-Essen Consulting,Mr,Wójcik,Verwaltung - UDEC,Administrative Officer,Internal Services
+HR-EMP-00102,HR-EMP-,Johanna,Female,1999-03-25,2022-06-15,Active,Universität Duisburg-Essen Consulting,Ms,Wolf,Kundenservice - UDEC,Customer Service Representative,Internal Services
+HR-EMP-00103,HR-EMP-,Daniel,Male,1985-05-16,2024-02-24,Active,Universität Duisburg-Essen Consulting,Mr,Çetin,Kundenservice - UDEC,Customer Service Representative,Internal Services
+HR-EMP-00104,HR-EMP-,Moritz,Male,1977-11-18,2024-04-29,Active,Universität Duisburg-Essen Consulting,Mr,Polat,Management & Leadership - UDEC,Executive Assistant,Internal Services
+HR-EMP-00105,HR-EMP-,Bianca,Female,1999-05-05,2024-08-12,Active,Universität Duisburg-Essen Consulting,Ms,Esposito,Verwaltung - UDEC,Secretary,Internal Services
