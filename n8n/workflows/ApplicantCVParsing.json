@@ -3,21 +3,23 @@
   "nodes": [
     {
       "parameters": {
-        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-        "options": {}
+        "model": "tencent/hy3:free",
+        "options": {
+          "temperature": 0
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        624,
-        176
+        688,
+        -96
       ],
       "id": "960eb7c0-a681-427f-ae0b-50f1ca5894e2",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
           "id": "6bryUCpl9r04EdLI",
-          "name": "OpenRouter account 2"
+          "name": "OpenRouter - Main Account"
         }
       }
     },
@@ -38,15 +40,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        224,
-        0
+        288,
+        -272
       ],
       "id": "c472d639-adbf-4a80-aded-f16f127e4ea4",
       "name": "HTTP Request-GET PDF",
       "credentials": {
         "erpNextApi": {
-          "id": "a1ERsZQlr0iW7WEq",
-          "name": "ERPNext account 2"
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
         }
       }
     },
@@ -59,8 +61,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        432,
-        0
+        496,
+        -272
       ],
       "id": "75f8da77-8a0e-4fce-8f6a-76932441992c",
       "name": "Extract from File: CV Extractor"
@@ -100,8 +102,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        1344,
-        0
+        1632,
+        -432
       ],
       "id": "86eeb2db-49e1-4f28-9c85-9b023e30a92e",
       "name": "Call 'ApplicantScoring'"
@@ -110,14 +112,13 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "cv-parsing",
-        "responseMode": "lastNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        64,
+        -272
       ],
       "id": "ff9989b0-7ced-4489-bbe7-ad5c379cc37e",
       "name": "Webhook: CV Applicant",
@@ -187,8 +188,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1136,
-        0
+        1200,
+        -272
       ],
       "id": "bd1f0d51-1046-48ac-8787-d18b0e484269",
       "name": "HTTP Request: Upload Parsed CV Data",
@@ -208,8 +209,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        928,
-        0
+        992,
+        -272
       ],
       "id": "c9780f6f-7f50-4de3-a94e-0f2b24328b2b",
       "name": "Code: Parse & Structure JSON",
@@ -218,17 +219,61 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Du bist ein erfahrener HR-Manager und Recruiting-Experte. Deine Aufgabe ist es, den bereitgestellten Lebenslauf präzise zu analysieren und die relevanten Daten strukturiert als JSON-Objekt zu extrahieren.\n\nAnalysiere den Lebenslauf und erstelle ein valides JSON-Objekt, das exakt den Feldnamen des ERPNext DocTypes \"Bewerber\" entspricht. \n\nWICHTIG:\n- Gib AUSSCHLIESSLICH das JSON-Objekt zurück. \n- Schreibe keinen Einleitungstext, keine Erklärungen und keine Markdown-Formatierung \n- Vermeide generische Formulierungen sowie Halluzinationen.\n- Extrahiere ALLE im Lebenslauf auffindbaren Zertifikate/Weiterbildungen, Sklills & Technologien,Sprachkenntnisse,Unternehmen und Projekte auf.\n- Falls bei Zeiträumen (z.B. Beruflicher Werdegang) der Monat fehlt, trage dann JJJJ \n- Im Feld \"custom_skills_und_technologien\" sollen alle Skills & Technologien aufgeführt werden. Unteranderem wie Programmiersprachen, Frameworks/Bibliotheken, Soziale/Persönliche/Methodische Kompetenzen etc..\n- JJJJ ein (z.B. 2023-2025).\n- Einstufung von Skills: Falls \"custom_cveinstufung\" nicht explizit genannt ist, schätze das Erfahrungslevel (Grundkenntnisse, Fortgeschritten, Experte) anhand der Komplexität der Aufgaben und Erfolge im Lebenslauf realistisch ein.\n\nHier ist der zu analysierende Lebenslauf-Text:\n{{ $json.text }}\n\nStruktur des auszugebenden JSON-Objekts im Sctructure Output Parser (Halte dich exakt an diese Feldnamen und Strukturen)\n\n{\n  \"custom_zusammenfassung_cv\": \"Professionelle Zusammenfassung in der 3. Person über den Bewerber. Enthalte die wichtigsten Bullet Points zu Aufgaben und Kernkompetenzen aus dem Punkt Berufliche Erfahrung/Projekten sowie andere wichtige Fähigkeiten und Eigenschaften aus dem Lebenslauf.\",\n  \"custom_hoechster_bildungsabschluss\": \"Extrahiere den höchsten Abschluss (z.B. 'M.Sc. in Software Engineering' oder 'B.Sc. in Maschinenbau' oder 'Abitur').\",\n  \"custom_bildungsabschluss_note\": \"Beispiel: 1.0 oder 1,7\"\n  \"custom_gesamtberufsjahre\": 0,\n  \"custom_beruflicher_werdegang\": [\n    {\n      \"custom_cvunternehmen\": \"Name des Unternehmens\",\n      \"custom_cvjobtitel__position\": \"Position / Jobtitel\",\n      \"custom_cvzeitraum\": \"Format: MM/JJJJ - MM/JJJJ oder MM/JJJJ - Heute\"\n    }\n  ],\n  \"custom_sprachkenntnisse\": [\n    {\n      \"custom_cvsprache\": \"Name der Sprache (z.B. Deutsch)\",\n      \"custom_cvsprachniveau\": \"Erlaubter Wert (NUR EINER): A1, A2, B1, B2, C1, C2, Muttersprache\"\n    }\n  ],\n  \"custom_skills_und_technologien\": [\n    {\n      \"custom_cvskill_technologie\": \"Name des Skill / Technologie / Framework (z.B. Java, ERPNext, n8n, Javascript)\",\n      \"custom_cveinstufung\": \"Erlaubter Wert (NUR EINER): Grundkenntnisse, Fortgeschritten, Experte\"\n    }\n  ],\n  \"custom_certificates\": [\n    {\n      \"custom_cvcertificates\": \"Name des Zertifikat / Weiterbildung\",\n      \"custom_cvdate_of_issue\": \"Format: MM/JJJJ oder MM/JJJJ - MM/JJJJ oder JJJJ\"\n    }\n  ],\n  \"custom_projects\": [\n    {\n      \"custom_cvproject\": \"Name des Projekts\",\n      \"custom_cvdescriptionproject\": \"Kurzbeschreibung (Aufgaben, Ziele, Fokus) des Projekts.\",\n      \"custom_cvtime_period\": \"Format: JJJJ\"\n    }\n  ],\n  \"custom_github_profil\": \"\",\n  \"custom_linkedin_profil\": \"\",\n  \"required\": [\n    \"custom_zusammenfassung_cv\",\n    \"custom_hoechster_bildungsabschluss\",\n    \"custom_bildungsabschluss_note\",\n    \"custom_gesamtberufsjahre\",\n    \"custom_beruflicher_werdegang\",\n    \"custom_sprachkenntnisse\",\n    \"custom_skills_und_technologien\",\n    \"custom_certificates\",\n    \"custom_projects\",\n    \"custom_github_profil\",\n    \"custom_linkedin_profil\"\n  ]\n}",
+        "text": "=Du bist ein erfahrener HR-Experte und Recruiting-Experte. Deine Aufgabe ist es, den bereitgestellten Lebenslauf präzise zu analysieren und die relevanten Daten strukturiert als JSON-Objekt zu extrahieren.\n\nAnalysiere den Lebenslauf und erstelle ein valides JSON-Objekt, das exakt den Feldnamen des ERPNext DocTypes \"Bewerber\" entspricht. \n\nWICHTIG:\n- Gib AUSSCHLIESSLICH das JSON-Objekt zurück. \n- Schreibe keinen Einleitungstext, keine Erklärungen und keine Markdown-Formatierung \n- Vermeide generische Formulierungen sowie Halluzinationen.\n- Extrahiere ALLE im Lebenslauf auffindbaren Zertifikate/Weiterbildungen, Sklills & Technologien,Sprachkenntnisse,Unternehmen und Projekte auf.\n- Falls bei Zeiträumen (z.B. Beruflicher Werdegang) der Monat fehlt, trage dann JJJJ \n- Im Feld \"custom_skills_und_technologien\" sollen alle Skills & Technologien aufgeführt werden. Unteranderem wie Programmiersprachen, Frameworks/Bibliotheken, Soziale/Persönliche/Methodische Kompetenzen etc..\n- JJJJ ein (z.B. 2023-2025).\n- Unter \"custom_projects\" sollen nur die Projekte aufgeführt werden und keine Tätigkeitsbeschreibungen aus dem \"Beruflichen Werdegang\" entnommen werden. Außer es wurden explizit Projekte erwähnt.\n- Einstufung von Skills: Falls \"custom_cveinstufung\" nicht explizit genannt ist, schätze das Erfahrungslevel (Grundkenntnisse, Fortgeschritten, Experte) anhand der Komplexität der Aufgaben und Erfolge im Lebenslauf realistisch ein.\n\nHier ist der zu analysierende Lebenslauf-Text:\n{{ $json.text }}\n\nStruktur des auszugebenden JSON-Objekts im Sctructure Output Parser (Halte dich exakt an diese Feldnamen und Strukturen)\n\n{\n  \"custom_zusammenfassung_cv\": \"Professionelle Zusammenfassung in der 3. Person über den Bewerber. Enthalte die wichtigsten Bullet Points zu Aufgaben und Kernkompetenzen aus dem Punkt Berufliche Erfahrung/Projekten sowie andere wichtige Fähigkeiten und Eigenschaften aus dem Lebenslauf.\",\n  \"custom_hoechster_bildungsabschluss\": \"Extrahiere den höchsten Abschluss (z.B. 'M.Sc. in Software Engineering' oder 'B.Sc. in Maschinenbau' oder 'Abitur').\",\n  \"custom_bildungsabschluss_note\": \"Beispiel: 1.0 oder 1,7\"\n  \"custom_gesamtberufsjahre\": 0,\n  \"custom_beruflicher_werdegang\": [\n    {\n      \"custom_cvunternehmen\": \"Name des Unternehmens\",\n      \"custom_cvjobtitel__position\": \"Position / Jobtitel\",\n      \"custom_cvzeitraum\": \"Format: MM/JJJJ - MM/JJJJ oder MM/JJJJ - Heute\"\n    }\n  ],\n  \"custom_sprachkenntnisse\": [\n    {\n      \"custom_cvsprache\": \"Name der Sprache (z.B. Deutsch)\",\n      \"custom_cvsprachniveau\": \"Erlaubter Wert (NUR EINER): A1, A2, B1, B2, C1, C2, Muttersprache\"\n    }\n  ],\n  \"custom_skills_und_technologien\": [\n    {\n      \"custom_cvskill_technologie\": \"Name des Skill / Technologie / Framework (z.B. Java, ERPNext, n8n, Javascript)\",\n      \"custom_cveinstufung\": \"Erlaubter Wert (NUR EINER): Grundkenntnisse, Fortgeschritten, Experte\"\n    }\n  ],\n  \"custom_certificates\": [\n    {\n      \"custom_cvcertificates\": \"Name des Zertifikat / Weiterbildung\",\n      \"custom_cvdate_of_issue\": \"Format: MM/JJJJ oder MM/JJJJ - MM/JJJJ oder JJJJ\"\n    }\n  ],\n  \"custom_projects\": [\n    {\n      \"custom_cvproject\": \"Name des Projekts\",\n      \"custom_cvdescriptionproject\": \"Kurzbeschreibung (Aufgaben, Ziele, Fokus) des Projekts.\",\n      \"custom_cvtime_period\": \"Format: JJJJ\"\n    }\n  ],\n  \"custom_github_profil\": \"\",\n  \"custom_linkedin_profil\": \"\",\n  \"required\": [\n    \"custom_zusammenfassung_cv\",\n    \"custom_hoechster_bildungsabschluss\",\n    \"custom_bildungsabschluss_note\",\n    \"custom_gesamtberufsjahre\",\n    \"custom_beruflicher_werdegang\",\n    \"custom_sprachkenntnisse\",\n    \"custom_skills_und_technologien\",\n    \"custom_certificates\",\n    \"custom_projects\",\n    \"custom_github_profil\",\n    \"custom_linkedin_profil\"\n  ]\n}",
         "batching": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        624,
-        0
+        688,
+        -272
       ],
       "id": "a59dbca8-e404-4a23-b767-3c8289aef411",
       "name": "LLM Chain: CV Field Mapping"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        -128
+      ],
+      "id": "c8c9bbfe-8b23-4bc8-9759-584da97c48cb",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "96b36fb9-bd97-41af-8201-02ac2ffbf6c7",
+              "leftValue": "={{ $('Webhook: CV Applicant').item.json.body.ScoringZustimmung }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1408,
+        -272
+      ],
+      "id": "972d7177-a0e7-44af-83c6-3e6c62ec060e",
+      "name": "If:KI-Scoring accepted"
     }
   ],
   "pinData": {},
@@ -281,7 +326,7 @@
       "main": [
         [
           {
-            "node": "Call 'ApplicantScoring'",
+            "node": "If:KI-Scoring accepted",
             "type": "main",
             "index": 0
           }
@@ -309,6 +354,24 @@
           }
         ]
       ]
+    },
+    "If:KI-Scoring accepted": {
+      "main": [
+        [
+          {
+            "node": "Call 'ApplicantScoring'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -316,7 +379,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "82f94349-bd39-4a05-8d1c-bd1c8cae7f13",
+  "versionId": "9539060b-a854-4fe1-867c-eafaf34de9df",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"

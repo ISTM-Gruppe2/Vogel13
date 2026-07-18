@@ -121,8 +121,8 @@
       "name": "Bewerbungstermine abholen",
       "credentials": {
         "erpNextApi": {
-          "id": "a1ERsZQlr0iW7WEq",
-          "name": "ERPNext account 2"
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
         }
       }
     },
@@ -217,35 +217,6 @@
     },
     {
       "parameters": {
-        "operation": "update",
-        "docType": "Job%20Applicant",
-        "documentName": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantmail_sugdate }}",
-        "properties": {
-          "customProperty": [
-            {
-              "field": "status",
-              "value": "Interview geplant"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.erpNext",
-      "typeVersion": 1,
-      "position": [
-        1616,
-        1008
-      ],
-      "id": "2dac203a-d1cf-47c6-a895-c6c40604cb17",
-      "name": "Bewerberstatus auf \"Interview geplant\" gestellt",
-      "credentials": {
-        "erpNextApi": {
-          "id": "trA9dhTurcxOP38C",
-          "name": "ERPNextBot"
-        }
-      }
-    },
-    {
-      "parameters": {
         "promptType": "define",
         "text": "=Du bist ein HR-Mitarbeiter und erhältst von Bewerbern freie Textangaben zu ihren Wunschzeiten für ein Vorstellungsgespräch. Diese Angaben können unstrukturiert sein, zum Beispiel:\n\n„Am 10.07.2026 vormittags oder nachmittags“\n„Nächste Woche Dienstag oder Mittwoch den ganzen Tag“\n\nHier ist die freie Textangabe der Bewerber: {{ $('Webhook:Button Bestaetigen').item.json.body.custom_prefdatetext_sugdate }}\n\nHier sind die bereits vorgeschlagenen Termine des HRlers: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_timeslots_sugdate.map(slot => slot.custom_interview_date_tslot + \" von \" + slot.custom_start_time_tslot + \" - \" + slot.custom_end_time_tslot).join(\", \") }}\n\nHier sind alle aktuell geplanten Bewerbungsgespräche: {{ $('Alle Interview holen').item.json.data.map(slot => slot.name + \" , \" + slot.job_applicant + \" , \" + slot.scheduled_on + \" von \" + slot.from_time + \" - \" + slot.to_time).join(\" | \") }}\n\nDeine Aufgabe ist es, diesen Text des Bewerbers in konkrete, strukturierte 1-stündige Interview-Zeitfenster umzuwandeln und im folgenden vorgegebenen JSON-Format auszugeben.\n\nWICHTIGE Regeln:\n\n- Es dürfen höchstens 4 neue Alternativtermine vorgeschlagen werden und dürfen nicht identisch wie die bereits vorgeschlagenen Termine sein. Es müssen mindestens 2 neue Termine vorgeschlagen werden.\n- Der Status der neuen Alternativtermine soll auf \"Alternativtermin angefordert\" gesetzt werden\n- Alternativtermine dürfen nur zwischen Montag und Freitag stattfinden. Beachte das heutige Datum: {{ $now.format('cccc, dd.MM.yyyy') }}\n- Alternativtermine dürfen nicht in der Vergangenheit oder am selben Tag erstellt werden. Beachte das heutige Datum: {{ $now.format('cccc, dd.MM.yyyy') }}. Als Beispiel: bereits erster vorgeschlagener Termin am 14.07, dann darf der neue Alternativtermin nicht vorher liegen, z.B. am 13.07.\n- Die Alternativtermine dürfen NICHT im gleichen Zeitraum mit den geplanten Bewerbungsgesprächen stattfinden\n- Termine dürfen nur zwischen 09:00 Uhr und 17:00 Uhr liegen.\n- Jeder Termin dauert genau 1 Stunde.\n- „Morgens“ entspricht Zeitfenstern zwischen 09:00 und 10:00 Uhr.\n- „Vormittags“ entspricht Zeitfenstern zwischen 10:00 und 12:00 Uhr.\n- „Mittags“ entspricht Zeitfenstern zwischen 12:00 und 14:00 Uhr.\n- „Nachmittags“ entspricht Zeitfenstern zwischen 14:00 und 17:00 Uhr.\n- „Ganzer Tag“ bedeutet alle möglichen 1-stündigen Slots zwischen 09:00 und 17:00 Uhr.\n- Relative Angaben wie „nächste Woche Dienstag“ müssen in ein konkretes Datum umgerechnet werden.\n",
         "hasOutputParser": true,
@@ -262,7 +233,7 @@
     },
     {
       "parameters": {
-        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "model": "tencent/hy3:free",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
@@ -275,8 +246,8 @@
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "GnI3LwT9giGC7g1N",
-          "name": "OpenRouter account 7"
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
         }
       }
     },
@@ -905,7 +876,7 @@
         "fromEmail": "vogeldreizehn@proton.me",
         "toEmail": "{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_applicantmail_sugdate }}",
         "subject": "=Neue Alternativ-Terminvorschläge für dein Interview als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_jobofferid_sugdate }}",
-        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Neue Terminvorschläge für Ihr Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Alternativtermine überprüft').item.json.body.vorname }} {{ $('Webhook: Alternativtermine überprüft').item.json.body.nachname }},</h1>\n            \n           <p>wir haben nun intern Ihre Wunschzeiten überprüft und unter Berücksichtigung dieser haben wir neue Termine erstellt.</p>\n\n<p>Bitte klicken Sie auf den folgenden Button, um einen der neu für Sie hinterlegten Termine direkt auszuwählen und zu bestätigen:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $('Webhook: Alternativtermine überprüft').item.json.body.Url }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt neuen Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sobald Sie sich für einen Termin entschieden haben, ist dieser fest für das Interview reserviert und Sie erhalten automatisch eine Bestätigung des Termins mit allen Details.</p>\n            \n            <p>Wir freuen uns sehr auf den gemeinsamen Austausch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Neue Terminvorschläge für Ihr Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Alternativtermine überprüft').item.json.body.vorname }} {{ $('Webhook: Alternativtermine überprüft').item.json.body.nachname }},</h1>\n            \n           <p>wir haben nun intern Ihre <strong>Wunschzeiten</strong> überprüft und unter Berücksichtigung dieser haben wir neue Termine erstellt.</p>\n\n<p>Bitte klicken Sie auf den folgenden <strong>Button</strong>, um einen der neu für Sie hinterlegten Termine direkt zu bestätigen:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $('Webhook: Alternativtermine überprüft').item.json.body.Url }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt neuen Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sobald Sie sich für einen Termin entschieden haben, ist dieser fest für das Interview reserviert und Sie erhalten automatisch eine Bestätigung des Termins mit allen Details.</p>\n            \n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
         "options": {
           "ccEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}"
         }
@@ -1021,8 +992,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1056,
-        -544
+        1232,
+        -688
       ],
       "id": "1df8c758-0285-453c-862c-008b01ec2a62",
       "name": "Sticky Note"
@@ -1036,8 +1007,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1056,
-        -304
+        1232,
+        -112
       ],
       "id": "f300d6ad-f97b-421c-bf26-2df21fae6e52",
       "name": "Sticky Note1"
@@ -1071,6 +1042,42 @@
       ],
       "id": "89ef6b8d-f0c1-43f5-b884-b29a206a9cc3",
       "name": "Update Bewerberstatus",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $json.custom_applicantmail_sugdate }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "Interview geplant"
+            },
+            {
+              "name": "custom_interview_round",
+              "value": "={{ $json.custom_interviewround_sugdate }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        1008
+      ],
+      "id": "4b20663f-b95d-4b5d-bce5-4b4d9d24b893",
+      "name": "Bewerberstatus auf \"Interview geplant\" gestellt1",
       "credentials": {
         "erpNextApi": {
           "id": "trA9dhTurcxOP38C",
@@ -1169,11 +1176,6 @@
         ]
       ]
     },
-    "Bewerberstatus auf \"Interview geplant\" gestellt": {
-      "main": [
-        []
-      ]
-    },
     "OpenRouter Chat Model": {
       "ai_languageModel": [
         [
@@ -1240,7 +1242,7 @@
       "main": [
         [
           {
-            "node": "Bewerberstatus auf \"Interview geplant\" gestellt",
+            "node": "Bewerberstatus auf \"Interview geplant\" gestellt1",
             "type": "main",
             "index": 0
           }
@@ -1369,7 +1371,13 @@
     },
     "If: Pending (Ausstehend)": {
       "main": [
-        [],
+        [
+          {
+            "node": "Send Email: Verfuegbare Alternativtermine zusenden",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "No Operation, do nothing",
@@ -1400,6 +1408,57 @@
           }
         ]
       ]
+    },
+    "If:Kennlerngespraech oder Fachgespraech": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Einladung Kennlerngespräch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email: Einladung Fachgespraech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interview loeschen": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Bestaetigung Rückzug Bewerber",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bewerberstatus auf \"Interview geplant\" gestellt1": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Terminbestaetigung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wunschtermin speichern": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Bestaetigung Wunschzeiten erhalten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1407,7 +1466,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "6de0fa88-8a32-4deb-98e4-7e1fe4467e6b",
+  "versionId": "c895fd12-e427-466f-9a60-df24335e37c6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
