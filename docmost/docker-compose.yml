@@ -1,0 +1,66 @@
+services:
+  docmost:
+    image: docmost/docmost:0.80
+    depends_on:
+      - db
+      - redis
+    environment:
+      APP_URL: 'https://docmost.vogel13.dev'
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: 'redis://redis:6379'
+      MAIL_DRIVER: smtp
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USERNAME: florim.preteni@gmail.com
+      SMTP_PASSWORD: ${SMTP_PW}
+      SMTP_SECURE: false
+      MAIL_FROM_ADDRESS: florim.preteni@gmail.com
+      MAIL_FROM_NAME: Docmost
+      TRUST_PROXY: 'true'
+    restart: unless-stopped
+    volumes:
+      - docmost:/app/data/storage
+    networks:
+      - internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.docmost.rule=Host(`docmost.vogel13.dev`)"
+      - "traefik.http.routers.docmost.entrypoints=websecure"
+      - "traefik.http.routers.docmost.tls=true"
+      - "traefik.http.routers.docmost.tls.certresolver=cfresolver"
+      - "traefik.http.services.docmost.loadbalancer.server.port=3000"
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: docmost
+      POSTGRES_USER: docmost
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  redis:
+    image: redis:8
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+volumes:
+  docmost:
+  db_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  internal:
+  proxy:
+    external: true
