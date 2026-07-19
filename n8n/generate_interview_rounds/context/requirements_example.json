@@ -1,0 +1,119 @@
+{
+  "job_id": "HR-OPN-2026-0007",
+  "job_title": "Backend Engineer (C#) (m/w/d)",
+  "total_max_score": 100,
+  "requirements": [
+    {
+      "req_id": "R001",
+      "category": "technical_skill",
+      "description": "Strong proficiency in C# and .NET for backend application development.",
+      "importance": "must-have",
+      "weight": 12
+    },
+    {
+      "req_id": "R002",
+      "category": "technical_skill",
+      "description": "Experience designing and implementing RESTful APIs.",
+      "importance": "must-have",
+      "weight": 10
+    },
+    {
+      "req_id": "R003",
+      "category": "technical_skill",
+      "description": "Experience with relational databases such as SQL Server and data modeling.",
+      "importance": "must-have",
+      "weight": 10
+    },
+    {
+      "req_id": "R004",
+      "category": "methodology",
+      "description": "Understanding of software architecture principles and design patterns.",
+      "importance": "must-have",
+      "weight": 10
+    },
+    {
+      "req_id": "R005",
+      "category": "technical_skill",
+      "description": "Experience with version control systems such as Git in collaborative environments.",
+      "importance": "must-have",
+      "weight": 8
+    },
+    {
+      "req_id": "R006",
+      "category": "methodology",
+      "description": "Experience working in agile development environments (Scrum or Kanban).",
+      "importance": "should-have",
+      "weight": 6
+    },
+    {
+      "req_id": "R007",
+      "category": "education",
+      "description": "Bachelor’s degree in Computer Science or a related field, or equivalent practical experience.",
+      "importance": "must-have",
+      "weight": 8
+    },
+    {
+      "req_id": "R008",
+      "category": "soft_skill",
+      "description": "Strong analytical thinking and problem-solving skills.",
+      "importance": "must-have",
+      "weight": 8
+    },
+    {
+      "req_id": "R009",
+      "category": "technical_skill",
+      "description": "Experience integrating external APIs and third-party services.",
+      "importance": "should-have",
+      "weight": 6
+    },
+    {
+      "req_id": "R010",
+      "category": "technical_skill",
+      "description": "Knowledge of cloud platforms such as Microsoft Azure or AWS.",
+      "importance": "nice-to-have",
+      "weight": 4
+    },
+    {
+      "req_id": "R011",
+      "category": "frameworks",
+      "description": "Experience with containerization technologies such as Docker and orchestration tools like Kubernetes.",
+      "importance": "nice-to-have",
+      "weight": 4
+    },
+    {
+      "req_id": "R012",
+      "category": "methodology",
+      "description": "Familiarity with CI/CD pipelines and automated deployment processes.",
+      "importance": "should-have",
+      "weight": 6
+    },
+    {
+      "req_id": "R013",
+      "category": "technical_skill",
+      "description": "Basic understanding of frontend technologies such as Angular or React.",
+      "importance": "nice-to-have",
+      "weight": 3
+    },
+    {
+      "req_id": "R014",
+      "category": "soft_skill",
+      "description": "Strong communication skills and ability to work effectively in cross-functional teams.",
+      "importance": "must-have",
+      "weight": 7
+    },
+    {
+      "req_id": "R015",
+      "category": "methodology",
+      "description": "Experience performing code reviews and applying clean code principles.",
+      "importance": "should-have",
+      "weight": 4
+    },
+    {
+      "req_id": "R016",
+      "category": "domain_knowledge",
+      "description": "Understanding of scalable system design and performance optimization.",
+      "importance": "must-have",
+      "weight": 4
+    }
+  ]
+}
