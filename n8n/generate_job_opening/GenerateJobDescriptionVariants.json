@@ -1,0 +1,383 @@
+{
+  "name": "GenerateJobDescriptionVariants",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stellengesuch-trigger",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        96
+      ],
+      "id": "1b8206c2-90f4-415c-9243-30da95c393e1",
+      "name": "Webhook - Stellengesuch",
+      "webhookId": "stellengesuch-trigger-id"
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/{{ $json.body.doctype }}/{{ $json.body.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -896,
+        96
+      ],
+      "id": "32685ad9-d1c1-4cac-84fa-385de72f3543",
+      "name": "Stellengesuch laden",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const stellengesuch = $('Stellengesuch laden').first().json.data;\nconst comp = parseFloat(stellengesuch.expected_compensation) || 0;\nconst lower_range = Math.ceil((comp * 0.8) / 1000) * 1000;\nconst upper_range = Math.ceil((comp * 1.2) / 1000) * 1000;\n\nreturn [{\n  json: {\n    ...stellengesuch,\n    salary_range: lower_range.toLocaleString('de-DE') + ' € – ' + upper_range.toLocaleString('de-DE') + ' €',\n    lower_range: lower_range,\n    upper_range: upper_range\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        96
+      ],
+      "id": "6d2af9fb-586f-4ff8-b30b-b6bcfb04c9e2",
+      "name": "Gehaltsrange berechnen"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a structured requirements profile for an AI-based applicant scoring system based on the following job description.\n\nThe requirements profile must be generated exclusively from the information provided in the job description and requirements.\n\nNo additional technologies, frameworks, degrees, certificates, language proficiency levels, or skills may be added that are not explicitly mentioned in the provided data.\n\nGeneral interpretations or professional derivations must NOT be included as standalone requirements.\n\nOnly explicitly mentioned:\n- Skills\n- Technologies\n- Frameworks\n- Methods\n- Languages\n- Qualifications\n- Work experience\n- Tasks\n\nmay be included in the requirements profile.\n\nLanguage proficiency levels (A1, A2, B1, B2, C1, C2, native speaker) may only be used if they are explicitly stated in the input data.\n\nValid categories:\n- technical_skill → General technical competencies\n- frameworks → Specific frameworks, libraries, or technologies\n- methodology → Work methods and standardized processes\n- experience → Type and duration of work experience, project management\n- education → Academic degrees, certificates\n- language → Spoken/written languages including proficiency level\n- soft_skill → Social and methodological competencies\n- domain_knowledge → Specific industry knowledge (only explicitly mentioned)\n- leadership → Leadership competencies, team responsibility\n- cultural_fit → Values, work style\n- logistics → Framework conditions (willingness to travel, location, etc.)\n\nDo NOT use any other categories.\n\nAssignment rules:\n- Project management, workshop facilitation, stakeholder management → experience\n- domain_knowledge only for explicitly mentioned industries/domains\n- Soft skills NEVER as must-have (unless explicitly described as mandatory)\n- Soft skills default to should-have or nice-to-have\n\nScope of requirements:\n\nThe formulation of requirements must exactly reflect the scope of the input data:\n\n- If a specific technology is mentioned (e.g. \"Java\"), then ONLY include that technology as a requirement. Do NOT broaden to categories.\n- If a broader category is mentioned (e.g. \"object-oriented languages\", \"cloud platforms\"), then formulate the requirement exactly as broad as stated in the source.\n- If alternatives are explicitly mentioned (e.g. \"degree in computer science or equivalent vocational training\"), then represent both options as equivalent in the requirement.\n\nExamples:\n- Input \"5 years of Java experience\" → Requirement: \"5 years of Java experience\"\n- Input \"5 years of experience with object-oriented languages\" → Requirement: \"5 years of experience with object-oriented languages\"\n- Input \"Degree in computer science or equivalent vocational training\" → Requirement: \"Degree in computer science or equivalent vocational training\"\n- Input \"Experience with Azure\" → Requirement: \"Experience with Azure\"\n- Input \"Experience with cloud platforms\" → Requirement: \"Experience with cloud platforms\"\n\nNEVER independently broaden or narrow – the source determines the level of detail.\n\nException: If no specific degree or vocational training is mentioned, default to:\n\"Degree in computer science, comparable fields of study, or equivalent vocational training\"\n\nBenefits/company offerings must NOT be included in the requirements profile.\n\nWeighting:\n- must-have = 10 (only for clearly critical requirements)\n- should-have = 7\n- nice-to-have = 3\n\nInput data:\n\nPosition: {{ $('Gehaltsrange berechnen').first().json.designation }}\nCompany: {{ $('Gehaltsrange berechnen').first().json.company }}\nDepartment: {{ $('Gehaltsrange berechnen').first().json.requested_by_dept }}\nDescription: {{ $('Gehaltsrange berechnen').first().json.description }}\nJob ID: {{ $('Gehaltsrange berechnen').first().json.name }}\n\nIMPORTANT:\n- No HTML tags\n- No Markdown\n- No explanations\n- Return exclusively valid JSON\n- Do not invent requirements or technologies\n\nJSON Format:\n{\n  \"job_id\": \"{{ $('Gehaltsrange berechnen').first().json.name }}\",\n  \"job_title\": \"{{ $('Gehaltsrange berechnen').first().json.designation }}\",\n  \"total_max_score\": 100,\n  \"requirements\": [\n    {\n      \"req_id\": \"R001\",\n      \"category\": \"...\",\n      \"description\": \"...\",\n      \"importance\": \"...\",\n      \"weight\": 10\n    }\n  ]\n}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        -208
+      ],
+      "id": "3f946e49-11a9-4995-bfa5-eccff77739de",
+      "name": "Requirements extrahieren"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a premium, corporate-style job advertisement based on this Job Requisition.\n\nStyle: Enterprise – formal, credible, strategically oriented, detailed, authoritative, and executive-level.\n\nWrite in a style similar to established international corporations. Use polished, sophisticated, and professional language that conveys trust, stability, quality, and long-term perspective. Prioritise responsibility, organisational impact, professionalism, and career development over innovation, agility, or startup culture.\n\nWrite the entire job advertisement in the following language:\n{{ $json.language }}\n\nThe output MUST be formatted as valid HTML. Use only the following HTML tags:\n\n- <h3> for section headings\n- <p> for paragraphs and body text\n- <ul> and <li> for bullet-point lists\n- <strong> for important keywords at the beginning of list items\n\nStructure:\n\n1. Corporate Introduction\n\nCreate an <h3> heading followed by 2–3 substantial paragraphs using <p> tags.\n\nThe introduction must:\n- Present the organisation and department in a credible corporate context.\n- Explain the strategic importance of the role within the organisation.\n- Describe how the position contributes to sustainable business success and long-term organisational objectives.\n- Emphasise professionalism, responsibility, collaboration, and high-quality standards.\n- Address experienced professionals respectfully using a formal tone.\n- Build motivation through responsibility, influence, stability, and long-term career opportunities rather than excitement or innovation.\n- Mention the number of open positions only when it is contextually relevant.\n\n2. Your Responsibilities\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a concise responsibility area in <strong> tags.\n- Continue with a complete, detailed sentence.\n- Focus on ownership, accountability, quality standards, structured collaboration, regulatory or organisational responsibilities where applicable, and measurable contribution to business objectives.\n- Explain the purpose and significance of each responsibility instead of simply listing tasks.\n- Be based strictly on the provided Job Requisition.\n\n3. Your Professional Profile\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a qualification category in <strong> tags.\n- Describe professional experience, technical or methodological expertise, education, analytical thinking, communication skills, reliability, and personal competencies.\n- Present qualifications in a structured and professional manner.\n- Clearly distinguish mandatory requirements from desirable qualifications where supported by the input.\n- Do not invent qualifications or experience that are not supported by the Job Requisition.\n\n4. What We Offer\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a benefit category in <strong> tags.\n- Emphasise organisational stability, structured onboarding, attractive employment conditions, professional development, long-term career perspectives, and a collaborative working environment.\n- Present the salary range factually and transparently when provided.\n- Avoid informal or promotional language.\n- Do not invent benefits, company values, or working conditions that are not supported by the input data.\n\nInput data:\n\nPosition: {{ $('Gehaltsrange berechnen').first().json.designation }}\nNumber of positions: {{ $('Gehaltsrange berechnen').first().json.no_of_positions }}\nSalary range: {{ $('Gehaltsrange berechnen').first().json.salary_range }}\nCompany: {{ $('Gehaltsrange berechnen').first().json.company }}\nDepartment: {{ $('Gehaltsrange berechnen').first().json.requested_by_dept }}\nDescription: {{ $('Gehaltsrange berechnen').first().json.description }}\n\nIMPORTANT:\n\n- Return valid HTML only.\n- Do not return Markdown.\n- Do not include explanations, comments, introductions, or code fences.\n- Return only the raw HTML job advertisement.\n- Generate all headings, paragraphs, and lists in the specified language.\n- Use formal, polished, and professional language throughout.\n- Prefer complete sentences, longer paragraphs, and a structured writing style.\n- Address candidates respectfully and professionally.\n- Emphasise responsibility, organisational impact, stability, quality, and long-term career development.\n- Avoid startup language, informal wording, excessive enthusiasm, buzzwords, slang, emojis, rhetorical questions, and overly promotional expressions.\n- Avoid phrases that sound casual, conversational, or marketing-driven.\n- Do not invent responsibilities, qualifications, technologies, company values, benefits, or working conditions.\n- Do not repeat the same information across multiple sections.\n- Do not include information that cannot be derived from the provided Job Requisition.\n- The final result should resemble a professionally reviewed job advertisement published by a large, established international organisation.\n- The salary range may be included, but it must be presented factually, transparently, and professionally.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        32
+      ],
+      "id": "be1b599e-08f2-403d-9767-dc0f9b399d0f",
+      "name": "Variante Enterprise"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a modern, technology-oriented job advertisement based on this Job Requisition.\n\nStyle: Modern/Tech – energetic, authentic, collaborative, product-focused, and innovation-driven.\n\nWrite in a style similar to modern technology companies. Use short, engaging paragraphs, active voice, and direct language. Focus on impact, ownership, collaboration, continuous learning, and growth rather than hierarchy or corporate structure. The advertisement should feel modern, human, and motivating while remaining professional and credible.\n\nWrite the entire job advertisement in the following language:\n{{ $json.language }}\n\nThe output MUST be formatted as valid HTML. Use only the following HTML tags:\n\n- <h3> for section headings\n- <p> for paragraphs and body text\n- <ul> and <li> for bullet-point lists\n- <strong> for important keywords at the beginning of list items\n\nStructure:\n\n1. What You'll Build\n\nCreate an <h3> heading followed by 1–2 concise and engaging paragraphs using <p> tags.\n\nThe section must:\n- Introduce the mission of the role rather than starting with a formal company presentation.\n- Explain what the candidate will build, improve, shape, or contribute to.\n- Show how the position supports meaningful products, services, processes, or organisational development.\n- Emphasise innovation, collaboration, ownership, and practical impact.\n- Address the candidate directly in a natural and authentic manner.\n- Use short and energetic sentences where appropriate.\n- Avoid formal corporate introductions, exaggerated enthusiasm, and generic recruitment phrases.\n- Mention the number of open positions only when it is contextually relevant.\n\n2. How You'll Make an Impact\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a concise, action-oriented keyword in <strong> tags.\n- Continue with a clear and specific description.\n- Focus on solving problems, building solutions, improving processes, experimenting with ideas, and collaborating with others.\n- Highlight ownership, autonomy, innovation, and measurable impact where supported by the input.\n- Explain why the responsibility matters instead of simply listing a task.\n- Use active language and avoid overly formal wording.\n- Be based strictly on the provided Job Requisition.\n\n3. What You'll Bring\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a relevant capability, skill, or experience category in <strong> tags.\n- Describe technical expertise, practical experience, problem-solving ability, communication skills, adaptability, curiosity, and willingness to learn.\n- Value demonstrated ability and relevant experience alongside formal qualifications.\n- Present requirements in an approachable and inclusive way.\n- Clearly distinguish essential requirements from desirable experience where supported by the input.\n- Avoid adding technologies, qualifications, certifications, or experience that are not supported by the Job Requisition.\n\n4. Why You'll Love Working Here\n\nCreate an <h3> heading followed by a <ul> containing 4–6 <li> entries.\n\nEach entry must:\n- Begin with a concise topic in <strong> tags.\n- Highlight supported aspects such as autonomy, modern collaboration, knowledge sharing, continuous development, transparent communication, and meaningful work.\n- Describe benefits, working conditions, and development opportunities in a concrete and credible manner.\n- Mention the salary range clearly and naturally when provided.\n- Focus on the candidate experience rather than formal corporate promises.\n- Avoid inventing benefits, tools, working models, cultural values, or career opportunities that are not supported by the input data.\n\nInput data:\n\nPosition: {{ $('Gehaltsrange berechnen').first().json.designation }}\nNumber of positions: {{ $('Gehaltsrange berechnen').first().json.no_of_positions }}\nSalary range: {{ $('Gehaltsrange berechnen').first().json.salary_range }}\nCompany: {{ $('Gehaltsrange berechnen').first().json.company }}\nDepartment: {{ $('Gehaltsrange berechnen').first().json.requested_by_dept }}\nDescription: {{ $('Gehaltsrange berechnen').first().json.description }}\n\nIMPORTANT:\n\n- Return valid HTML only.\n- Do not return Markdown.\n- Do not include explanations, comments, introductions, or code fences.\n- Return only the raw HTML job advertisement.\n- Generate all headings, paragraphs, and lists in the specified language.\n- Translate the section headings naturally into the specified language.\n- Use direct, contemporary, inclusive, and candidate-focused language.\n- Prefer active sentences, short paragraphs, and concrete wording.\n- Maintain a modern and approachable tone without becoming casual or unprofessional.\n- Focus on impact, ownership, collaboration, innovation, and growth.\n- Avoid traditional corporate language, excessive formality, rigid hierarchy, buzzwords, slang, emojis, rhetorical questions, and exaggerated claims.\n- Avoid phrases that sound generic, impersonal, or copied from a traditional corporate job advertisement.\n- Do not invent responsibilities, technologies, qualifications, company values, working conditions, or benefits.\n- Do not repeat the same information across multiple sections.\n- Do not include information that cannot be derived from the provided Job Requisition.\n- The final result should resemble a professionally written job advertisement from a modern, technology-driven organisation.\n- The salary range may be included, but it must be presented clearly, naturally, and transparently.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        272
+      ],
+      "id": "1c2a762d-ba77-4d34-a82c-aa26e3efe792",
+      "name": "Variante Modern"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a concise, high-quality job advertisement based on this Job Requisition.\n\nStyle: Compact – direct, clear, modern, professional, and focused on essential information.\n\nWrite in a style suitable for candidates who want to understand the role quickly. Prioritise clarity, relevance, and readability over detailed storytelling. Use short paragraphs, compact bullet points, and precise wording. Every sentence must provide useful information.\n\nWrite the entire job advertisement in the following language:\n{{ $json.language }}\n\nThe output MUST be formatted as valid HTML. Use only the following HTML tags:\n\n- <h3> for section headings\n- <p> for short paragraphs\n- <ul> and <li> for bullet-point lists\n- <strong> for concise keywords at the beginning of list items\n\nStructure:\n\n1. Role at a Glance\n\nCreate an <h3> heading followed by one short paragraph using a <p> tag.\n\nThe paragraph must:\n- Introduce the position, company, and department.\n- Summarise the main purpose of the role in 2–3 sentences.\n- Explain what makes the position relevant or attractive without using promotional language.\n- Mention the number of open positions only when it is contextually useful.\n- Remain concise and avoid a lengthy company introduction.\n\n2. Your Key Tasks\n\nCreate an <h3> heading followed by a <ul> containing 3–5 <li> entries.\n\nEach entry must:\n- Begin with a concise action or responsibility in <strong> tags.\n- Continue with one short and specific sentence.\n- Focus only on the most important responsibilities.\n- Avoid background explanations, repeated details, and secondary tasks.\n- Be based strictly on the provided Job Requisition.\n\n3. What You Need\n\nCreate an <h3> heading followed by a <ul> containing 3–5 <li> entries.\n\nEach entry must:\n- Begin with a concise qualification or capability in <strong> tags.\n- Describe only the most relevant experience, skills, education, or personal competencies.\n- Prioritise essential requirements over desirable attributes.\n- Keep each entry short and easy to scan.\n- Avoid adding qualifications, technologies, or experience that are not supported by the Job Requisition.\n\n4. What You Can Expect\n\nCreate an <h3> heading followed by a <ul> containing 3–4 <li> entries.\n\nEach entry must:\n- Begin with a concise benefit or employment condition in <strong> tags.\n- Present supported benefits, development opportunities, working conditions, or organisational advantages.\n- Mention the salary range clearly and factually when provided.\n- Avoid broad promises, detailed corporate descriptions, or invented benefits.\n- Remain brief and specific.\n\nInput data:\n\nPosition: {{ $('Gehaltsrange berechnen').first().json.designation }}\nNumber of positions: {{ $('Gehaltsrange berechnen').first().json.no_of_positions }}\nSalary range: {{ $('Gehaltsrange berechnen').first().json.salary_range }}\nCompany: {{ $('Gehaltsrange berechnen').first().json.company }}\nDepartment: {{ $('Gehaltsrange berechnen').first().json.requested_by_dept }}\nDescription: {{ $('Gehaltsrange berechnen').first().json.description }}\n\nIMPORTANT:\n\n- Return valid HTML only.\n- Do not return Markdown.\n- Do not include explanations, comments, introductions, or code fences.\n- Return only the raw HTML job advertisement.\n- Generate all headings, paragraphs, and lists in the specified language.\n- Translate the section headings naturally into the specified language.\n- Keep the entire advertisement concise and easy to scan.\n- Use short sentences and precise wording.\n- Limit the introduction to a maximum of three sentences.\n- Keep each bullet point to a maximum of two sentences.\n- Prioritise facts, responsibilities, and requirements over storytelling.\n- Avoid long paragraphs, strategic corporate language, startup-style enthusiasm, buzzwords, slogans, rhetorical questions, slang, and emojis.\n- Avoid generic wording unless it is directly adapted to the provided position.\n- Do not invent responsibilities, qualifications, technologies, company values, benefits, or working conditions.\n- Do not repeat the same information across multiple sections.\n- Do not include information that cannot be derived from the provided Job Requisition.\n- The final result should resemble a concise and professionally edited job advertisement designed for quick reading.\n- The salary range may be included, but it must be presented briefly, clearly, and factually.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        512
+      ],
+      "id": "0dca9ad1-8e3d-4d26-a57e-2d0289803a48",
+      "name": "Variante Compact"
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -384
+      ],
+      "id": "1904fe4c-ed6f-4344-889c-63f946792a87",
+      "name": "LLM Requirements",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        192
+      ],
+      "id": "f8f61afd-96a5-41e0-ac34-0b6f122cfc38",
+      "name": "LLM Enterprise",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        432
+      ],
+      "id": "5e3260d5-6179-450f-9871-aa5efb0ccf37",
+      "name": "LLM Modern",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        672
+      ],
+      "id": "48acb24d-a2a6-4184-a943-0c2e9f367b89",
+      "name": "LLM Compact",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allowedCategories = [\n  \"technical_skill\", \"frameworks\", \"methodology\",\n  \"experience\", \"education\", \"language\",\n  \"soft_skill\", \"domain_knowledge\", \"leadership\",\n  \"cultural_fit\", \"logistics\"\n];\n\n// Requirements JSON\nconst reqRaw = $('Requirements extrahieren').first().json.text;\nconst reqCleaned = reqRaw.replace(/```json/g, '').replace(/```/g, '').trim();\nconst requirementsProfile = JSON.parse(reqCleaned);\n\n// Validierung & Normalisierung\nfor (const req of requirementsProfile.requirements) {\n  if (!allowedCategories.includes(req.category)) {\n    req.category = \"technical_skill\";\n  }\n  if (req.category === \"soft_skill\" && req.importance === \"must-have\") {\n    req.importance = \"should-have\";\n  }\n  if (req.importance === \"must-have\") req.weight = 10;\n  if (req.importance === \"should-have\") req.weight = 7;\n  if (req.importance === \"nice-to-have\") req.weight = 3;\n}\n\n// Beschreibungstexte aus den 3 Varianten\nconst enterprise = $('Variante Enterprise').first().json.text || '';\nconst modern = $('Variante Modern').first().json.text || '';\nconst compact = $('Variante Compact').first().json.text || '';\n\n// Stellengesuch-Daten\nconst stellengesuch = $('Gehaltsrange berechnen').first().json;\n\nreturn [{\n  json: {\n    stellengesuch_id: stellengesuch.name,\n    designation: stellengesuch.designation,\n    company: stellengesuch.company,\n    department: stellengesuch.requested_by_dept,\n    requested_by: stellengesuch.requested_by,\n    expected_by: stellengesuch.expected_by,\n    location: stellengesuch.custom_location || '',\n    employment_type: stellengesuch.custom_employment_type || '',\n    expected_compensation: stellengesuch.expected_compensation,\n    variant_enterprise: enterprise.trim(),\n    variant_modern: modern.trim(),\n    variant_compact: compact.trim(),\n    requirements_profile: requirementsProfile,\n    requirements_profile_json: JSON.stringify(requirementsProfile),\n    status: \"Draft\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        96
+      ],
+      "id": "f1b81646-6c34-4597-8295-b0dd1b2f9805",
+      "name": "Merge & Validate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Job Description Variant",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ stellengesuch: $json.stellengesuch_id, designation: $json.designation, company: $json.company, department: $json.department, requested_by: $json.requested_by, expected_by: $json.expected_by, location: $json.location, employment_type: $json.employment_type, expected_compensation: $json.expected_compensation, variant_enterprise: $json.variant_enterprise, variant_modern: $json.variant_modern, variant_compact: $json.variant_compact, requirements_profile: $json.requirements_profile_json, status: 'Draft' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        144,
+        96
+      ],
+      "id": "0b676812-9798-4b39-b2c2-211e82bf20cb",
+      "name": "Varianten in ERPNext speichern",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Stellengesuch": {
+      "main": [
+        [
+          {
+            "node": "Stellengesuch laden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stellengesuch laden": {
+      "main": [
+        [
+          {
+            "node": "Gehaltsrange berechnen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gehaltsrange berechnen": {
+      "main": [
+        [
+          {
+            "node": "Requirements extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requirements extrahieren": {
+      "main": [
+        [
+          {
+            "node": "Variante Enterprise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variante Enterprise": {
+      "main": [
+        [
+          {
+            "node": "Variante Modern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variante Modern": {
+      "main": [
+        [
+          {
+            "node": "Variante Compact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variante Compact": {
+      "main": [
+        [
+          {
+            "node": "Merge & Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Requirements": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Requirements extrahieren",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Enterprise": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Variante Enterprise",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Modern": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Variante Modern",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Compact": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Variante Compact",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge & Validate": {
+      "main": [
+        [
+          {
+            "node": "Varianten in ERPNext speichern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bd33d515-2ab9-4a8a-ae4b-44afeb1ac6a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "KHxa0qRvXhzk6M07",
+  "tags": []
+}

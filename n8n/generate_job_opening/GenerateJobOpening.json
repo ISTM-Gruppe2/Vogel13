@@ -1,0 +1,203 @@
+{
+  "name": "GenerateJobOpening",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Requisition/{{ $('Gewählte Variante auswählen1').first().json.stellengesuch_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ status: 'Open & Approved' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        -1376
+      ],
+      "id": "70fbb905-0dac-415a-88bb-bc5b06cd909b",
+      "name": "Stellengesuch Status updaten",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "variante-ausgewaehlt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        -1376
+      ],
+      "id": "80ca12a3-d591-4208-b291-2968fbd58575",
+      "name": "Webhook - Variante gewählt1",
+      "webhookId": "variante-ausgewaehlt"
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Description Variant/{{ $json.body.variant_name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        816,
+        -1376
+      ],
+      "id": "11a6c2b7-b21e-44bd-bbfb-d16d26c27688",
+      "name": "Variant mit Auswahl laden1",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.data;\nconst selected = data.selected_variant;\n\nlet description = '';\nif (selected === 'Enterprise' || selected === '1') {\n  description = data.variant_enterprise;\n} else if (selected === 'Modern' || selected === '2') {\n  description = data.variant_modern;\n} else if (selected === 'Compact' || selected === '3') {\n  description = data.variant_compact;\n}\n\nif (!description) {\n  throw new Error('Keine Variante ausgewählt! selected_variant: ' + selected);\n}\n\n// Gehaltsrange berechnen: 20% unter/über expected_compensation, auf nächsten Tausender aufrunden\nconst comp = parseFloat(data.expected_compensation) || 0;\nconst lowerRaw = comp * 0.8;\nconst upperRaw = comp * 1.2;\nconst lower_range = Math.ceil(lowerRaw / 1000) * 1000;\nconst upper_range = Math.ceil(upperRaw / 1000) * 1000;\n\nreturn [{\n  json: {\n    job_title: data.designation,\n    designation: data.designation,\n    company: data.company,\n    department: data.department,\n    description: description,\n    custom_requirements_profil: data.requirements_profile,\n    custom_job_requisition_id: data.stellengesuch,\n    custom_angefordert_von: data.requested_by,\n    closes_on: data.expected_by,\n    location: data.location,\n    employment_type: data.employment_type,\n    lower_range: lower_range,\n    upper_range: upper_range,\n    stellengesuch_id: data.stellengesuch\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        -1376
+      ],
+      "id": "0e4b8272-2aaf-4d72-9ff7-f77c983feb10",
+      "name": "Gewählte Variante auswählen1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Job Opening",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ job_title: $json.job_title + ' (m/w/d)', designation: $json.designation, company: $json.company, department: $json.department, description: $json.description, custom_requirements_profil: $json.custom_requirements_profil, custom_job_requisition_id: $json.custom_job_requisition_id, custom_angefordert_von: $json.custom_angefordert_von, closes_on: $json.closes_on, location: $json.location, employment_type: $json.employment_type, lower_range: $json.lower_range, upper_range: $json.upper_range, salary_per: 'Year', status: 'Open' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1328,
+        -1376
+      ],
+      "id": "7e35cb90-59a6-4cf9-9891-9232208fea3d",
+      "name": "Job Opening erstellen1",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Description Variant/{{ $('Variant mit Auswahl laden1').first().json.data.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ status: 'Published' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        -1376
+      ],
+      "id": "2777bef9-a5f2-465a-bb3e-5f077c50e807",
+      "name": "Variant Status updaten1",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Variante gewählt1": {
+      "main": [
+        [
+          {
+            "node": "Variant mit Auswahl laden1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variant mit Auswahl laden1": {
+      "main": [
+        [
+          {
+            "node": "Gewählte Variante auswählen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gewählte Variante auswählen1": {
+      "main": [
+        [
+          {
+            "node": "Job Opening erstellen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Opening erstellen1": {
+      "main": [
+        [
+          {
+            "node": "Variant Status updaten1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variant Status updaten1": {
+      "main": [
+        [
+          {
+            "node": "Stellengesuch Status updaten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "94b1b92d-0722-4afa-a600-3c3e888a39ef",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "RN9bGGcniW3mDwSr",
+  "tags": []
+}
