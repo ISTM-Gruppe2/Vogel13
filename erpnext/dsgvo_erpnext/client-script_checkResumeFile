@@ -1,0 +1,10 @@
+frappe.web_form.on('resume_attachment', (field, value) => {
+    if (value && !value.toLowerCase().endsWith('.pdf')) {
+        //Benachrichtigung im Browser
+        frappe.msgprint({
+        title: __('Ungültiges Dateiformat'),
+		message: __('Bitte nur PDF-Dateien hochladen!')});
+			// löscht das Feld wieder
+			frappe.web_form.set_value('resume_attachment', null);
+			}
+});

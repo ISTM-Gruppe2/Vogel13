@@ -1,0 +1,14 @@
+frappe.web_form.validate = () => {
+    let datenschutz_akzeptiert = frappe.web_form.get_value('custom_datenschutzhinweis_bewerber');
+    
+    if (!datenschutz_akzeptiert) {
+        frappe.msgprint({
+            title: __('Pflichtfeld ankreuzen'),
+            message: __('Bitte aktivieren Sie die Checkbox für den "Datenschutzhinweis für Bewerber" um die Bewerbung einzusenden.')
+        });
+        
+        return false; 
+    }
+    
+    return true;
+};
