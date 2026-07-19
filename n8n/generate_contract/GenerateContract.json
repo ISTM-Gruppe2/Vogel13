@@ -1,0 +1,234 @@
+{
+  "name": "GenerateContract",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Job Offer",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5376,
+        864
+      ],
+      "id": "dedeadf0-448e-4553-92f5-dc93b36742e2",
+      "name": "create_job_offer",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const llmOutput = $input.first().json.output || $input.first().json.text || $input.first().json.content;\n\nif (!llmOutput) {\n  throw new Error('Kein LLM Output erhalten. Verfugbare Felder: ' + Object.keys($input.first().json).join(', '));\n}\n\nconst cleaned = llmOutput\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (error) {\n  console.error('JSON Parse Error:', error.message);\n  console.error('Raw LLM output:', llmOutput.substring(0, 500));\n  throw new Error('Invalid JSON from LLM: ' + error.message);\n}\n\nif (!parsed.offer_terms || !Array.isArray(parsed.offer_terms)) {\n  throw new Error('LLM output missing offer_terms array');\n}\n\nconst applicant = $('aggregate_applicant_data').first().json;\n\nconst today = new Date();\nconst offerDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');\n\nconst offerTerms = parsed.offer_terms.map(function(term, i) {\n  return {\n    offer_term: term.offer_term,\n    value: String(term.value || '').trim()\n  };\n});\n\nconst jobOffer = {\n  doctype: 'Job Offer',\n  job_applicant: applicant.applicant_id,\n  applicant_name: applicant.applicant_name || applicant.applicant_last_name,\n  applicant_email: applicant.applicant_email,\n  status: 'Awaiting Response',\n  offer_date: offerDate,\n  designation: applicant.designation,\n  company: 'Universität Duisburg-Essen Consulting',\n  job_offer_term_template: 'Standard',\n  select_terms: 'ihk-standard',\n  offer_terms: offerTerms\n};\n\nreturn {\n  json: jobOffer\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        864
+      ],
+      "id": "8090d4e6-e616-4617-98c0-e77a11b74535",
+      "name": "parse_and_build_job_offer"
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4928,
+        1040
+      ],
+      "id": "537bce39-ff1a-4973-8f46-e95817697e17",
+      "name": "or_chat_model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# You are an HR expert for contract creation in a German company.\n\nAnalyze the applicant data and interview feedbacks and extract the contract terms for a Job Offer.\n\n## Input Data\n\n- Applicant: {{ $json.applicant_name }}\n- Position: {{ $json.designation }}\n- Salary Expectation Lower Bound: {{ $json.salary_lower }} {{ $json.currency }}\n- Salary Expectation Upper Bound: {{ $json.salary_upper > 0 ? $json.salary_upper + ' ' + $json.currency : 'not specified' }}\n- Education: {{ $json.applicant_education }}\n- Work Experience: {{ $json.applicant_experience_years }} years\n- Address: {{ $json.applicant_street }}, {{ $json.applicant_plz }} {{ $json.applicant_city }}\n- Nationality: {{ $json.applicant_nationality }}\n\n## CV Summary\n\n{{ $json.cv_summary }}\n\n## Career History\n\n{{ $json.career_history }}\n\n## Interview Feedbacks\n\n{{ $json.interview_summaries }}\n\n## Task\n\nExtract the following contract data from the interview feedbacks and the applicant profile. Use this prioritization:\n\n1. **Priority 1 – Interview Feedback:** What was concretely agreed upon in the interviews? (Salary, start date, working hours, leave, etc.)\n2. **Priority 2 – Applicant Profile:** If nothing was agreed, derive values from the profile (position, salary expectation, etc.)\n3. **Priority 3 – Company Defaults:** If neither agreed nor in the profile, use these defaults:\n   - Working Hours: 40 h/Woche\n   - Probationary Period: 6 Monate\n   - Leaves per Year: 30 Tage\n   - Notice Period: 4 Wochen zum Monatsende\n   - Place of Work: Universität Duisburg-Essen, Campus Essen - Universitätsstraße 2, 45141 Essen\n   - Employee Benefits: Flexible Arbeitszeiten mit Home-Office-Option, betriebliche Altersvorsorge, Mobilitätszulage, Gesundheitsprogramme sowie umfassende Weiterbildungs- und Zertifizierungsmöglichkeiten.\n   - Incentives: 13. Gehalt, Weihnachtsgeld\n\n\n## Output Format\n\nReturn ONLY a JSON object, no Markdown, no code block:\n\n{\n  \"designation\": \"{{ $json.designation }}\",\n  \"offer_date\": \"YYYY-MM-DD (today's date)\",\n  \"offer_terms\": [\n    {\"offer_term\": \"Applicant Full Name\", \"value\": \"...\"},\n    {\"offer_term\": \"Designation\", \"value\": \"...\"},\n    {\"offer_term\": \"Date of Joining\", \"value\": \"...\"},\n    {\"offer_term\": \"Place of Work\", \"value\": \"...\"},\n    {\"offer_term\": \"Working Hours\", \"value\": \"...\"},\n    {\"offer_term\": \"Probationary Period\", \"value\": \"...\"},\n    {\"offer_term\": \"Monthly Salary\", \"value\": \"...\"},\n    {\"offer_term\": \"Annual Salary\", \"value\": \"...\"},\n    {\"offer_term\": \"Leaves per Year\", \"value\": \"...\"},\n    {\"offer_term\": \"Notice Period\", \"value\": \"...\"},\n    {\"offer_term\": \"Job Description\", \"value\": \"...\"},\n    {\"offer_term\": \"Responsibilities\", \"value\": \"...\"},\n    {\"offer_term\": \"Employee Benefits\", \"value\": \"...\"},\n    {\"offer_term\": \"Incentives\", \"value\": \"...\"}\n  ],\n  \"summary\": \"Kurze Zusammenfassung der extrahierten Konditionen (1-2 Sätze, Deutsch)\"\n}\n\n## Rules\n\n- Date of Joining: If a concrete date is mentioned in the feedbacks, use it. Otherwise, estimate based on context (e.g., \"kurzfristig verfügbar\" = +1 month from today).\n- Monthly Salary: If a salary was agreed in the feedbacks, use that. Otherwise, use the lower salary expectation (lower_range) divided by 12.\n- Annual Salary: Monthly Salary × 12.\n- Job Description: Summarize the position and core tasks in 2-3 sentences, based on CV and designation.\n- Responsibilities: Derive 3-5 concrete responsibilities from the CV.\n- All values must be plausible and traceable.\n- Alle Texte auf Deutsch.\n- Return ONLY the JSON object, no ```json, no Markdown, no explanation.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        4928,
+        864
+      ],
+      "id": "25172b85-ebea-4f22-a4f2-668a3a9d74cb",
+      "name": "llm_chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "const httpResponse = $input.first().json;\nconst applicant = httpResponse.data || httpResponse;\n\nconst firstName = applicant.custom_vorname || '';\nconst lastName = applicant.applicant_name || '';\nconst fullName = (firstName + ' ' + lastName).trim();\n\nconst interviewSummary = applicant.custom_interview_summary || '';\nconst technicalSummary = applicant.custom_summary_technical || '';\nconst cvSummary = applicant.custom_zusammenfassung_cv || '';\n\nconst combinedInterviewNotes = [\n  '=== SCREENING-FEEDBACK ===',\n  interviewSummary,\n  '',\n  '=== FACHLICHES-FEEDBACK ===',\n  technicalSummary\n].join('\\n');\n\nconst careerEntries = (applicant.custom_beruflicher_werdegang || []).map(function(e, i) {\n  return '- ' + (e.custom_cvunternehmen || '') + ' | ' + (e.custom_cvjobtitel__position || '') + ' | ' + (e.custom_cvzeitraum || '');\n}).join('\\n');\n\nreturn {\n  json: {\n    applicant_id: applicant.name,\n    applicant_name: fullName,\n    applicant_email: applicant.email_id,\n    designation: applicant.designation || '',\n    job_title: applicant.job_title || '',\n    applicant_first_name: applicant.custom_vorname || '',\n    applicant_last_name: applicant.applicant_name || '',\n    applicant_street: applicant.custom_straße || '',\n    applicant_city: applicant.custom_stadt || '',\n    applicant_plz: applicant.custom_postleitzahl || '',\n    applicant_country: applicant.country || '',\n    applicant_nationality: applicant.custom_staatsangehörigkeit || '',\n    applicant_phone: applicant.phone_number || '',\n    applicant_dob: applicant.custom_geburtsdatum || '',\n    applicant_education: applicant.custom_höchster_bildungsabschluss || '',\n    applicant_experience_years: applicant.custom_gesamtberufsjahre || 0,\n    salary_lower: applicant.lower_range || 0,\n    salary_upper: applicant.upper_range || 0,\n    currency: applicant.currency || 'EUR',\n    interview_summaries: combinedInterviewNotes,\n    cv_summary: cvSummary,\n    career_history: careerEntries\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4768,
+        864
+      ],
+      "id": "0e2767a9-a60c-4647-85ff-bdd720e7375a",
+      "name": "aggregate_applicant_data"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant/' + encodeURIComponent($json.applicant_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4576,
+        864
+      ],
+      "id": "6f933a14-b9fc-4602-9258-d6cffb904af9",
+      "name": "fetch_applicant",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.body || $json;\n\nconst applicantId = payload.email_id;\n\nif (!applicantId) {\n  throw new Error('Keine job_applicant oder job_applicant_id im Webhook-Payload gefunden. Keys: ' + Object.keys(payload).join(', '));\n}\n\nreturn {\n  json: { applicant_id: applicantId }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4400,
+        864
+      ],
+      "id": "23db00bb-c703-4e20-89bf-45d7ea475123",
+      "name": "extract_applicant_id"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-contract",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        4224,
+        864
+      ],
+      "id": "37f0e5ea-e57e-4719-9424-9aef819fc940",
+      "name": "webhook_trigger",
+      "webhookId": "c1d2e3f4-0001-4000-8000-300000000001"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "parse_and_build_job_offer": {
+      "main": [
+        [
+          {
+            "node": "create_job_offer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "or_chat_model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "llm_chain": {
+      "main": [
+        [
+          {
+            "node": "parse_and_build_job_offer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "aggregate_applicant_data": {
+      "main": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch_applicant": {
+      "main": [
+        [
+          {
+            "node": "aggregate_applicant_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract_applicant_id": {
+      "main": [
+        [
+          {
+            "node": "fetch_applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webhook_trigger": {
+      "main": [
+        [
+          {
+            "node": "extract_applicant_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e1dedec7-31b7-48ee-af4f-92789aab8d05",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "RKrq45dlVPs8vP9b",
+  "tags": []
+}

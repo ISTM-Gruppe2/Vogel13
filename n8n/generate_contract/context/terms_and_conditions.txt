@@ -1,0 +1,190 @@
+Arbeitsvertrag
+
+zwischen der {Company}
+- im Folgenden "Arbeitgeber" genannt -
+
+und
+
+{Salutation} {FullName}
+- im Folgenden "Arbeitnehmer" genannt -
+
+wird folgender Arbeitsvertrag geschlossen:
+
+
+§ 1 Tätigkeit
+
+Der Arbeitnehmer wird als {Designation} eingestellt.
+
+{Job Description}
+
+Dem Arbeitnehmer obliegen insbesondere folgende Aufgaben:
+
+{Responsibilities}
+
+
+§ 2 Beginn des Arbeitsverhältnisses
+
+Das Arbeitsverhältnis beginnt am {Date of Joining}.
+
+
+§ 3 Arbeitsort
+
+Der Arbeitsort ist {Place of Work}.
+
+
+§ 4 Arbeitszeit
+
+Die regelmäßige wöchentliche Arbeitszeit beträgt {Working Hours}.
+
+
+§ 5 Vergütung
+
+Der Arbeitnehmer erhält ein monatliches Bruttogehalt in Höhe von {Monthly Salary}. Das Jahresbruttogehalt beträgt {Annual Salary}.
+
+Zusätzlich werden folgende Sonderzahlungen gewährt: {Incentives}.
+
+
+§ 6 Probezeit
+
+Die ersten {Probationary Period} des Arbeitsverhältnisses gelten als Probezeit.
+
+
+§ 7 Urlaub
+
+Der Arbeitnehmer hat Anspruch auf einen jährlichen Erholungsurlaub von {Leaves per Year}.
+
+Die rechtliche Behandlung des Urlaubs richtet sich im Übrigen nach § 12 sowie den gesetzlichen Bestimmungen.
+
+
+§ 8 Kündigungsfrist
+
+Nach Ablauf der Probezeit beträgt die Kündigungsfrist {Notice Period}. Für die Verlängerung der Kündigungsfrist bei längerer Betriebszugehörigkeit sowie für die weiteren Regelungen zur Beendigung des Arbeitsverhältnisses gilt § 19.
+
+
+§ 9 Sonstige Leistungen und Incentives
+
+Dem Arbeitnehmer werden folgende zusätzliche Leistungen gewährt: {Employee Benefits}.
+
+
+§ 10 Kurzarbeit
+
+Der Arbeitgeber ist berechtigt, einseitig Kurzarbeit gegenüber dem Arbeitnehmer anzuordnen, wenn ein erheblicher Arbeitsausfall vorliegt, der auf wirtschaftlichen Gründen oder einem unabwendbaren Ereignis beruht und der Arbeitsausfall der Arbeitsverwaltung angezeigt ist (derzeit §§ 95 ff. SGB III). Er sollte dabei eine Ankündigungsfrist von … Wochen einhalten. Der Arbeitnehmer ist bei Einführung von Kurzarbeit damit einverstanden, dass die Arbeitszeit vorübergehend verkürzt und für die Dauer der Arbeitszeitverkürzung die Vergütung entsprechend reduziert wird.
+
+Überstunden von bis zu 10 % der regelmäßigen wöchentlichen Arbeitszeit sind mit der Vergütung abgegolten; im Übrigen werden sie ohne Zuschläge gesondert vergütet.
+
+Leistet der Arbeitgeber über das vereinbarte Monatsentgelt hinaus Gratifikationen, Boni oder sonstige zusätzliche Sonderzahlungen, die nicht zuvor individuell vereinbart worden sind, handelt es sich um freiwillige Leistungen des Arbeitgebers aufgrund einer jeweils gesondert getroffenen Entscheidung. Auch die mehrmalige und regelmäßige Zahlung begründet keinen Rechtsanspruch weder für die Vergangenheit noch für die Zukunft. Die vorstehenden Sätze gelten nicht, wenn die Leistungen auf einer individuellen Vertragsabrede mit dem Arbeitnehmer beruhen.
+
+
+§ 11 Urlaub (Allgemeine Regelungen)
+
+Der Arbeitnehmer hat Anspruch auf einen gesetzlichen Mindesturlaub von derzeit 20 Arbeitstagen im Kalenderjahr – ausgehend von einer Fünf-Tage-Woche.
+
+Der Arbeitgeber kann zusätzlich einen vertraglichen Urlaub gewähren, dessen Umfang im Angebotsschreiben festgelegt wird. Bei der Gewährung von Urlaub wird zuerst der gesetzliche Urlaub eingebracht.
+
+Der vertragliche Zusatzurlaub mindert sich für jeden vollen Monat, in dem der Arbeitnehmer keinen Anspruch auf Entgelt bzw. Entgeltfortzahlung hat oder bei Ruhen des Arbeitsverhältnisses um ein Zwölftel. Im Ein- und Austrittsjahr erhält der Arbeitnehmer für jeden vollen Beschäftigungsmonat ein Zwölftel des vertraglichen Zusatzurlaubs.
+
+Für den vertraglichen Zusatzurlaub gilt abweichend von dem gesetzlichen Mindesturlaub, dass der Urlaubsanspruch am 31. Dezember des jeweiligen Kalenderjahres (oder mit Ablauf des Übertragungszeitraums am 31. März des Folgejahres) auch dann verfällt, wenn er wegen Arbeitsunfähigkeit des Arbeitnehmers nicht genommen werden kann. Der gesetzliche Urlaub verfällt in diesem Fall erst 15 Monate nach Ende des Urlaubsjahres.
+
+Bei Beendigung des Arbeitsverhältnisses sind verbleibende Urlaubsansprüche innerhalb der Kündigungsfrist abzubauen, soweit dies möglich ist. Der vertragliche Zusatzurlaub erlischt mit Beendigung des Arbeitsverhältnisses.
+
+Die rechtliche Behandlung des Urlaubs richtet sich im Übrigen nach den gesetzlichen Bestimmungen.
+
+
+§ 12 Krankheit
+
+Die Entgeltfortzahlung im Krankheitsfall richtet sich nach den gesetzlichen Bestimmungen.
+
+Die Arbeitsverhinderung ist dem Arbeitgeber unverzüglich mitzuteilen. Dauert die Arbeitsunfähigkeit länger als drei Kalendertage, hat der Arbeitnehmer eine ärztliche Bescheinigung über das Bestehen sowie deren voraussichtliche Dauer spätestens an dem auf den dritten Kalendertag folgenden Arbeitstag vorzulegen.
+
+Die Vorlagepflicht gilt nicht für Arbeitnehmer, die Versicherte einer gesetzlichen Krankenkasse sind, wenn der behandelnde Arzt die Bescheinigung per eAU an die gesetzliche Krankenversicherung weiterleitet. Diese Arbeitnehmer sind verpflichtet, zu den genannten Zeitpunkten das Bestehen einer Arbeitsunfähigkeit sowie deren voraussichtliche Dauer feststellen zu lassen und sich eine ärztliche Bescheinigung ausstellen zu lassen.
+
+Die Nachweispflichten gelten auch nach Ablauf der sechs Wochen Entgeltfortzahlung.
+
+Der Arbeitgeber ist berechtigt, die Vorlage der Arbeitsunfähigkeitsbescheinigung früher zu verlangen.
+
+
+§ 13 Fortbildungen
+
+Ein Anspruch auf vom Arbeitgeber bereitgestellte Fortbildungen besteht nicht.
+
+
+§ 14 Betriebliche Altersversorgung
+
+Es besteht kein Anspruch auf eine betriebliche Altersversorgung. Auf die gesetzliche Möglichkeit der Entgeltumwandlung wird hingewiesen.
+
+
+§ 15 Ausschluss von § 616 BGB
+
+Ein Anspruch auf Arbeitsentgelt bei einer vorübergehenden Verhinderung im Sinne des § 616 BGB besteht nicht. Die Anwendbarkeit der Norm wird ausgeschlossen.
+
+
+§ 16 Verschwiegenheitspflicht
+
+Der Arbeitnehmer verpflichtet sich, während der Dauer des Arbeitsverhältnisses und auch nach dem Ausscheiden, über alle Geschäftsgeheimnisse sowie betriebliche Angelegenheiten vertraulicher Natur, die als solche von der Geschäftsleitung schriftlich oder mündlich bezeichnet werden bzw. offensichtlich als solche zu erkennen sind, Stillschweigen zu bewahren und ohne ausdrückliche Genehmigung der Geschäftsleitung keinen dritten Personen zugänglich zu machen. Der Arbeitnehmer hat die Anweisungen und Maßnahmen des Arbeitgebers zur Geheimhaltung zu beachten. Im Zweifelsfall wird der Arbeitnehmer eine Weisung des Arbeitgebers zur Vertraulichkeit bestimmter Tatsachen einholen.
+
+Für jeden Fall der Zuwiderhandlung gegen diese Verpflichtung verpflichtet sich der Arbeitnehmer zur Zahlung einer Vertragsstrafe in Höhe einer Bruttomonatsvergütung. Die Geltendmachung eines weiteren Schadens bleibt dem Arbeitgeber vorbehalten.
+
+Verstößt der Arbeitnehmer gegen seine Verschwiegenheitspflicht, kann dies zur Kündigung führen.
+
+
+§ 17 Nebentätigkeit
+
+Der Arbeitnehmer verpflichtet sich, jede entgeltliche oder das Arbeitsverhältnis beeinträchtigende Nebenbeschäftigung vor ihrer Aufnahme dem Arbeitgeber gegenüber in Textform anzuzeigen. Sie ist nur mit Zustimmung des Arbeitgebers zulässig.
+
+Der Arbeitgeber erteilt die Einwilligung, wenn die Wahrnehmung der dienstlichen Aufgaben durch die Nebenbeschäftigung nicht behindert und sonstige berechtigte Interessen des Arbeitgebers nicht beeinträchtigt werden.
+
+Der Arbeitgeber kann seine Einwilligung jederzeit widerrufen, wenn sein betriebliches Interesse dies auch unter Berücksichtigung der Arbeitnehmerinteressen erfordert.
+
+
+§ 18 Beendigung des Arbeitsverhältnisses
+
+Der Rücktritt vom Arbeitsvertrag oder seine Kündigung vor Aufnahme der Tätigkeit sind ausgeschlossen.
+
+Die Beendigung des Arbeitsverhältnisses durch Kündigung oder Aufhebungsvertrag bedarf für ihre Wirksamkeit der Schriftform; die elektronische Form ist ausgeschlossen.
+
+Nach Ablauf der Probezeit finden die gesetzlichen Kündigungsfristen (§ 622 BGB) Anwendung.
+
+Danach kann ein Arbeitsverhältnis mit einer Kündigungsfrist von vier Wochen zum Fünfzehnten oder zum Ende eines Kalendermonats gekündigt werden.
+
+Die Kündigungsfristen für Arbeitgeber verlängern sich bei längerem Bestehen des Arbeitsverhältnisses wie folgt:
+- nach zwei Jahren auf einen Monat zum Monatsende,
+- nach fünf Jahren auf zwei Monate zum Monatsende,
+- nach acht Jahren auf drei Monate zum Monatsende,
+- nach zehn Jahren auf vier Monate zum Monatsende,
+- nach zwölf Jahren auf fünf Monate zum Monatsende,
+- nach 15 Jahren auf sechs Monate zum Monatsende,
+- nach 20 Jahren auf sieben Monate zum Monatsende.
+
+Jede gesetzliche Verlängerung der Kündigungsfrist zugunsten des Arbeitnehmers gilt in gleicher Weise auch zugunsten des Arbeitgebers.
+
+Der Arbeitgeber ist berechtigt, den Arbeitnehmer bis zur Beendigung des Arbeitsverhältnisses freizustellen. Die Freistellung erfolgt unter Anrechnung der dem Arbeitnehmer eventuell noch zustehenden Urlaubsansprüche sowie eventueller Guthaben auf dem Arbeitszeitkonto. In der Zeit der Freistellung hat sich der Arbeitnehmer einen durch Verwendung seiner Arbeitskraft erzielten Verdienst auf den Vergütungsanspruch gegenüber dem Arbeitgeber anrechnen zu lassen.
+
+Das Arbeitsverhältnis endet ohne Kündigung spätestens mit Ablauf des Monats, in dem der Arbeitnehmer das für ihn gesetzlich festgelegte Renteneintrittsalter vollendet hat.
+
+Das Recht zur außerordentlichen Kündigung bleibt unberührt.
+
+
+§ 19 Kündigungsschutzklage
+
+Möchte ein Arbeitnehmer geltend machen, dass eine Kündigung sozial nicht gerechtfertigt oder aus anderen Gründen unwirksam ist, muss er innerhalb von drei Wochen nach Zugang der schriftlichen Kündigung Klage beim Arbeitsgericht auf Feststellung erheben, dass das Arbeitsverhältnis durch die Kündigung nicht aufgelöst ist.
+
+
+§ 20 Vertragsstrafe
+
+Der Arbeitnehmer verpflichtet sich für den Fall, dass er das Arbeitsverhältnis nicht oder verspätet antritt, die Arbeit unberechtigt vorübergehend verweigert, das Arbeitsverhältnis vertragswidrig beendet oder den Arbeitgeber durch vertragswidriges Verhalten zur außerordentlichen Kündigung veranlasst, dem Arbeitgeber eine Vertragsstrafe zu zahlen. Als Vertragsstrafe wird ein sich aus der vereinbarten Bruttomonatsvergütung zu errechnendes Bruttotagegeld für jeden Tag der Zuwiderhandlung vereinbart, insgesamt jedoch nicht mehr als das in der gesetzlichen Mindestkündigungsfrist ansonsten zu zahlende Arbeitsentgelt. Die Vertragsstrafe ist der Höhe nach auf maximal eine Bruttomonatsvergütung beschränkt. Das Recht des Arbeitgebers, weitergehende Schadensersatzansprüche geltend zu machen, bleibt unberührt.
+
+
+§ 21 Verfall-/Ausschlussfristen
+
+Alle Ansprüche aus dem Arbeitsverhältnis verfallen, wenn sie nicht innerhalb einer Ausschlussfrist von drei Monaten nach ihrer Fälligkeit gegenüber dem Vertragspartner in Textform geltend gemacht und im Falle der Ablehnung durch den Vertragspartner innerhalb von weiteren drei Monaten eingeklagt werden. Hiervon unberührt bleiben Ansprüche für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit, aus vorsätzlicher Vertragsverletzung und vorsätzlicher unerlaubter Handlung.
+
+Die Ausschlussfrist gilt nicht für den Anspruch eines Arbeitnehmers auf den gesetzlichen Mindestlohn. Über den Mindestlohn hinausgehende Vergütungsansprüche des Arbeitnehmers unterliegen hingegen der vereinbarten Ausschlussfrist.
+
+
+§ 22 Vertragsänderungen und Nebenabreden
+
+Stillschweigende, mündliche oder schriftliche Nebenabreden wurden nicht getroffen. Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform. Dies gilt auch für eine Aufhebung dieser Klausel. Dem Arbeitnehmer entstehen daher keine Ansprüche aus betrieblicher Übung. Vertragsänderungen durch Individualabreden sind formlos wirksam.
+
+Sollten einzelne Bestimmungen dieses Vertrages unwirksam sein oder werden, wird hierdurch die Wirksamkeit des Vertrages im Übrigen nicht berührt.
+
+Der Arbeitnehmer verpflichtet sich, dem Arbeitgeber unverzüglich über Veränderungen der persönlichen Verhältnisse wie Familienstand, Kinderzahl und Adresse Mitteilung zu machen.
