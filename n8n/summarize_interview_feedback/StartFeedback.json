@@ -1,0 +1,302 @@
+{
+  "name": "StartFeedback",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "start-interview-feedback-summary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        14768,
+        7808
+      ],
+      "id": "4b4734e4-cd02-4c8f-a166-f66e1829b4f3",
+      "name": "webhook_trigger",
+      "webhookId": "c1d2e3f4-0001-4000-8000-200000000001"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.body || $json;\n\nconst roundName = payload.interview_round || '';\nconst isRound1 = roundName.toLowerCase().includes('screening');\n\nif (!isRound1) {\n  throw new Error('Kein Screening-Interview (Runde 1). Abbruch. Runde: ' + roundName);\n}\n\nconst skills = payload.skill_assessment || [];\nconst averageRating = skills.length > 0\n  ? parseFloat((skills.reduce((sum, s) => sum + (s.rating || 0), 0) / skills.length).toFixed(2))\n  : 0;\n\nconst skillsText = skills.length > 0\n  ? skills.map(function(s) {\n      const name = s.skill || 'Unbekannt';\n      const rating = s.rating != null ? s.rating : '-';\n      return '- ' + name + ': ' + rating;\n    }).join('\\n')\n  : 'Keine Skill-Bewertungen vorhanden';\n\nfunction parseFeedbackSections(text) {\n  const result = { overall: '', strengths: '', weaknesses: '', culture: '', logistics: '', other: '' };\n  if (!text) return result;\n  const lines = text.split('\\n');\n  let currentSection = 'overall';\n  for (const line of lines) {\n    const lower = line.trim().toLowerCase();\n    if (lower.startsWith('gesamteindruck')) { currentSection = 'overall'; result.overall += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('starken') || lower.startsWith('staerken')) { currentSection = 'strengths'; result.strengths += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('schwachen') || lower.startsWith('schwaechen')) { currentSection = 'weaknesses'; result.weaknesses += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('kultur')) { currentSection = 'culture'; result.culture += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('logistik')) { currentSection = 'logistics'; result.logistics += line.trim() + '\\n'; continue; }\n    if (currentSection === 'overall') result.overall += line + '\\n';\n    else if (currentSection === 'strengths') result.strengths += line + '\\n';\n    else if (currentSection === 'weaknesses') result.weaknesses += line + '\\n';\n    else if (currentSection === 'culture') result.culture += line + '\\n';\n    else if (currentSection === 'logistics') result.logistics += line + '\\n';\n    else result.other += line + '\\n';\n  }\n  return {\n    overall: result.overall.trim(),\n    strengths: result.strengths.trim(),\n    weaknesses: result.weaknesses.trim(),\n    culture: result.culture.trim(),\n    logistics: result.logistics.trim(),\n    other: result.other.trim()\n  };\n}\n\nconst sections = parseFeedbackSections(payload.feedback || '');\n\nreturn {\n  json: {\n    applicant_id: payload.job_applicant || 'Unbekannt',\n    position: 'Screening',\n    round_name: roundName || 'Screening',\n    result: payload.result || 'Unbekannt',\n    average_rating: averageRating,\n    skill_assessments: skillsText,\n    feedback: payload.feedback || '',\n    feedback_sections: sections,\n    raw_skill_assessment: skills,\n    interview_id: payload.interview || '',\n    feedback_id: payload.name || ''\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14992,
+        7808
+      ],
+      "id": "3b8fd7a1-d1ba-430e-8009-fbb0f8c4947a",
+      "name": "aggregate_data"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant/' + encodeURIComponent($json.applicant_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        15216,
+        7808
+      ],
+      "id": "64ade797-bfa9-40a6-a1ac-5baf1bfbda74",
+      "name": "get_applicant_name",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Opening/' + encodeURIComponent($json.job_title || ($json.data && $json.data.job_title) || '') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        15440,
+        7808
+      ],
+      "id": "3e9e4be5-120d-42ab-8a7c-8e3db84412f5",
+      "name": "get_job_opening",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Interview/' + encodeURIComponent($('aggregate_data').first().json.interview_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        15648,
+        7808
+      ],
+      "id": "6d1a9443-85e4-4016-8856-ba699b03243b",
+      "name": "get_interview",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const aggr = $('aggregate_data').first().json;\n\nconst applicantResponse = $('get_applicant_name').first().json;\nconst applicantData = applicantResponse.data || applicantResponse;\n\nconst dsgvoConsent = applicantData.custom_dsgvo_scoring_zustimmung;\nconst datenschutzConsent = applicantData.custom_datenschutzhinweis_bewerber;\n\nif (!dsgvoConsent || dsgvoConsent !== 1) {\n  throw new Error('DSGVO Scoring-Zustimmung fehlt oder nicht erteilt (custom_dsgvo_scoring_zustimmung = ' + dsgvoConsent + '). Abbruch.');\n}\n\nif (!datenschutzConsent || datenschutzConsent !== 1) {\n  throw new Error('Datenschutzhinweis-Zustimmung fehlt oder nicht erteilt (custom_datenschutzhinweis_bewerber = ' + datenschutzConsent + '). Abbruch.');\n}\n\nlet jobOpeningData = null;\nconst jobOpeningNode = $('get_job_opening');\nif (jobOpeningNode) {\n  const jobOpeningResponse = jobOpeningNode.first().json;\n  jobOpeningData = jobOpeningResponse.data || jobOpeningResponse;\n  if (jobOpeningData && jobOpeningData.doctype !== 'Job Opening') {\n    jobOpeningData = null;\n  }\n}\n\nconst firstName = applicantData.custom_vorname || '';\nconst lastName = applicantData.applicant_name || '';\nconst applicantName = (firstName + ' ' + lastName).trim();\n\nconst jobOpeningId = applicantData.job_title || '';\n\nconst cvSummary = applicantData.custom_zusammenfassung_cv || '';\n\nconst cvSkills = applicantData.custom_skills_und_technologien || [];\nconst cvSkillsText = Array.isArray(cvSkills) && cvSkills.length > 0\n  ? cvSkills.map(function(s) {\n      const tech = s.custom_cvskill_technologie || 'Unbekannt';\n      const level = s.custom_cveinstufung || '-';\n      return '- ' + tech + ': ' + level;\n    }).join('\\n')\n  : 'Keine CV-Skills vorhanden';\n\nconst cvCareer = applicantData.custom_beruflicher_werdegang || [];\nconst cvCareerText = Array.isArray(cvCareer) && cvCareer.length > 0\n  ? cvCareer.map(function(c) {\n      const title = c.custom_cvjobtitel__position || 'Unbekannt';\n      const company = c.custom_cvunternehmen || 'Unbekannt';\n      const period = c.custom_cvzeitraum || '-';\n      return '- ' + title + ' bei ' + company + ' (' + period + ')';\n    }).join('\\n')\n  : 'Kein beruflicher Werdegang vorhanden';\n\nconst sections = aggr.feedback_sections || {};\nconst feedbackStructured = sections.overall\n  ? 'Gesamteindruck:\\n' + sections.overall\n    + (sections.strengths ? '\\n\\nStärken:\\n' + sections.strengths : '')\n    + (sections.weaknesses ? '\\n\\nSchwächen:\\n' + sections.weaknesses : '')\n    + (sections.culture ? '\\n\\nKultur:\\n' + sections.culture : '')\n    + (sections.logistics ? '\\n\\nLogistik:\\n' + sections.logistics : '')\n  : (aggr.feedback || '');\n\nconst oldSummary = applicantData.custom_interview_summary || '';\nconst oldSkillAssessment = applicantData.custom_skill_assessment || [];\nconst oldScreeningFeedbackId = applicantData.custom_screening_feedback || '';\n\nconst jobDescription = jobOpeningData\n  ? (jobOpeningData.description || jobOpeningData.job_description || '')\n  : '';\n\nlet interviewerName = '';\nlet interviewDate = '';\nconst interviewNode = $('get_interview');\nif (interviewNode) {\n  const interviewResponse = interviewNode.first().json;\n  const interviewData = interviewResponse.data || interviewResponse;\n  if (interviewData && interviewData.doctype !== 'Interview') {\n    interviewerName = '';\n    interviewDate = '';\n  } else {\n    interviewDate = interviewData.scheduled_on || '';\n    const details = interviewData.interview_details || [];\n    if (details.length > 0) {\n      interviewerName = details[0].interviewer || '';\n    }\n  }\n}\n\nreturn {\n  json: {\n    applicant_id: aggr.applicant_id,\n    applicant_name: applicantName,\n    position: aggr.position,\n    round_name: aggr.round_name,\n    result: aggr.result,\n    average_rating: aggr.average_rating,\n    skill_assessments: aggr.skill_assessments,\n    feedback: aggr.feedback,\n    feedback_sections: aggr.feedback_sections,\n    feedback_structured: feedbackStructured,\n    raw_skill_assessment: aggr.raw_skill_assessment,\n    interview_id: aggr.interview_id,\n    feedback_id: aggr.feedback_id,\n    job_opening_id: jobOpeningId,\n    job_description: jobDescription,\n    cv_summary: cvSummary,\n    cv_skills: cvSkillsText,\n    cv_career: cvCareerText,\n    interviewer_name: interviewerName,\n    interview_date: interviewDate,\n    old_summary: oldSummary,\n    old_skill_assessment: oldSkillAssessment,\n    old_screening_feedback_id: oldScreeningFeedbackId\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        15872,
+        7808
+      ],
+      "id": "a44865ef-32ab-4a40-8892-744df955c1ff",
+      "name": "enrich_data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# You are an HR expert for interview feedback analysis.\n\nCreate a brief, clear summary of this screening interview as running text in German.\n\n## Input Data\n\n- Candidate: {{ $json.applicant_name || $json.applicant_id }}\n- Position: {{ $json.position }}\n- Round: {{ $json.round_name }}\n- Result: {{ $json.result }}\n- Average Rating: {{ $json.average_rating }}/1\n\n### Skill Assessments from the Interview\n{{ $json.skill_assessments }}\n\n### Interviewer's Feedback Notes\n{{ $json.feedback_structured }}\n\n### Candidate's CV Data\nCV Summary:\n{{ $json.cv_summary || 'No CV data available' }}\n\nCV Skills & Technologies:\n{{ $json.cv_skills }}\n\nProfessional Career:\n{{ $json.cv_career }}\n\n### Job Opening Requirements\n{{ $json.job_description || 'No job description available' }}\n\n## Task\n\nCreate a running text (100-200 words) with:\n- Overall impression (including alignment with CV and job requirements)\n- Key strengths\n- Key weaknesses/risks\n\n## Rules\n\n- Write concisely and clearly\n- Mention both positive and negative points\n- Watch for discrepancies between CV self-assessment and interview impression\n- Evaluate the fit against the specific job requirements, not just general qualities\n- All texts in German\n- No Markdown, only plain text\n- Use the candidate's name, not their email address\n\n## Output Format\n\nReturn ONLY the running text, no JSON, no Markdown:\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        16080,
+        7808
+      ],
+      "id": "62c7ce8f-a8c9-40a2-8234-63f5b490389b",
+      "name": "llm_chain"
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        16080,
+        8016
+      ],
+      "id": "307bf83b-8c1d-4906-add1-ea0b5c13ef4c",
+      "name": "or_chat_model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const llmOutput = $input.first().json.output || $input.first().json.text || $input.first().json.content;\n\nif (!llmOutput) {\n  throw new Error('Kein LLM Output. Felder: ' + Object.keys($input.first().json).join(', '));\n}\n\nconst cleaned = llmOutput.replace(/```json/g, '').replace(/```/g, '').trim();\n\nconst aggr = $('aggregate_data').first();\nconst enrich = $('enrich_data').first();\nconst jobApplicantId = aggr.json.applicant_id;\nconst rawSkills = aggr.json.raw_skill_assessment || [];\nconst result = aggr.json.result || '';\nconst feedbackId = aggr.json.feedback_id || '';\nconst interviewId = aggr.json.interview_id || '';\n\nconst interviewDate = enrich ? enrich.json.interview_date : '';\nconst interviewerName = enrich ? enrich.json.interviewer_name : '';\nconst processedDate = new Date().toISOString().split('T')[0];\n\nlet header = '=== Interview-Feedback Zusammenfassung ===\\n';\nheader += 'Interview-ID: ' + (interviewId || feedbackId) + '\\n';\nif (interviewDate) header += 'Interview-Datum: ' + interviewDate + '\\n';\nheader += 'Erstellt am: ' + processedDate + '\\n';\nif (interviewerName) header += 'Interviewer: ' + interviewerName + '\\n';\nheader += '----------------------------------------\\n\\n';\n\nconst isCleared = result.toLowerCase() === 'cleared';\n\nlet output = header + cleaned;\noutput += '\\n\\n---\\n';\noutput += 'Ergebnis Screening-Interview (Runde 1): ';\noutput += isCleared ? 'Weiter zu Runde 2.' : 'Kein Weiterkommen.';\n\nconst skillAssessmentTable = rawSkills.map(function(s) {\n  return {\n    skill: s.skill || 'Unbekannt',\n    rating: s.rating != null ? s.rating : 0\n  };\n});\n\nconst updatePayload = {\n  custom_interview_summary: output,\n  custom_skill_assessment: skillAssessmentTable,\n  custom_screening_feedback: feedbackId\n};\n\nif (enrich && enrich.json.old_summary && enrich.json.old_summary.trim() !== '') {\n  updatePayload.custom_interview_summary_history = JSON.stringify([\n    {\n      version: enrich.json.old_screening_feedback_id || 'unknown',\n      date: processedDate,\n      summary: enrich.json.old_summary,\n      skills: enrich.json.old_skill_assessment || []\n    }\n  ]);\n}\n\nreturn {\n  json: {\n    job_applicant_id: jobApplicantId,\n    update_payload: updatePayload\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16416,
+        7808
+      ],
+      "id": "33ef5262-c5e4-441c-b0a6-5f7aa3c5d36a",
+      "name": "parse_and_format"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant/' + encodeURIComponent($json.job_applicant_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.update_payload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        16624,
+        7808
+      ],
+      "id": "57ea057b-8640-4ad5-8062-79f130e9939f",
+      "name": "save_to_erpnext",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook_trigger": {
+      "main": [
+        [
+          {
+            "node": "aggregate_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "aggregate_data": {
+      "main": [
+        [
+          {
+            "node": "get_applicant_name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_applicant_name": {
+      "main": [
+        [
+          {
+            "node": "get_job_opening",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_job_opening": {
+      "main": [
+        [
+          {
+            "node": "get_interview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_interview": {
+      "main": [
+        [
+          {
+            "node": "enrich_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enrich_data": {
+      "main": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "llm_chain": {
+      "main": [
+        [
+          {
+            "node": "parse_and_format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_and_format": {
+      "main": [
+        [
+          {
+            "node": "save_to_erpnext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "or_chat_model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bb70dddc-301b-4a0d-9c9c-5d5739233988",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "oT9EjQc0fnXkQNCp",
+  "tags": []
+}

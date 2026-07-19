@@ -1,0 +1,302 @@
+{
+  "name": "CompleteFeedback",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "complete-interview-summary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2912,
+        1664
+      ],
+      "id": "f73ad764-9bdc-4c0f-bfcc-e0a65824f24a",
+      "name": "webhook_trigger_r2",
+      "webhookId": "c1d2e3f4-0002-4000-8000-200000000002"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json.body || $json;\n\nconst roundName = payload.interview_round || '';\nconst isFach = roundName.toLowerCase().includes('fach-');\n\nif (!isFach) {\n  throw new Error('Kein Fach- & Fit-Gespraech (Runde 2). Abbruch. Runde: ' + roundName);\n}\n\nconst skills = payload.skill_assessment || [];\nconst averageRating = skills.length > 0\n  ? parseFloat((skills.reduce((sum, s) => sum + (s.rating || 0), 0) / skills.length).toFixed(2))\n  : 0;\n\nconst skillsText = skills.length > 0\n  ? skills.map(function(s) {\n      const name = s.skill || 'Unbekannt';\n      const rating = s.rating != null ? s.rating : '-';\n      return '- ' + name + ': ' + rating;\n    }).join('\\n')\n  : 'Keine Skill-Bewertungen vorhanden';\n\nfunction parseFeedbackSections(text) {\n  const result = { overall: '', strengths: '', weaknesses: '', culture: '', logistics: '', other: '' };\n  if (!text) return result;\n  const lines = text.split('\\n');\n  let currentSection = 'overall';\n  for (const line of lines) {\n    const lower = line.trim().toLowerCase();\n    if (lower.startsWith('gesamteindruck')) { currentSection = 'overall'; result.overall += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('starken') || lower.startsWith('staerken')) { currentSection = 'strengths'; result.strengths += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('schwachen') || lower.startsWith('schwaechen')) { currentSection = 'weaknesses'; result.weaknesses += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('kultur')) { currentSection = 'culture'; result.culture += line.trim() + '\\n'; continue; }\n    if (lower.startsWith('logistik')) { currentSection = 'logistics'; result.logistics += line.trim() + '\\n'; continue; }\n    if (currentSection === 'overall') result.overall += line + '\\n';\n    else if (currentSection === 'strengths') result.strengths += line + '\\n';\n    else if (currentSection === 'weaknesses') result.weaknesses += line + '\\n';\n    else if (currentSection === 'culture') result.culture += line + '\\n';\n    else if (currentSection === 'logistics') result.logistics += line + '\\n';\n    else result.other += line + '\\n';\n  }\n  return {\n    overall: result.overall.trim(),\n    strengths: result.strengths.trim(),\n    weaknesses: result.weaknesses.trim(),\n    culture: result.culture.trim(),\n    logistics: result.logistics.trim(),\n    other: result.other.trim()\n  };\n}\n\nconst sections = parseFeedbackSections(payload.feedback || '');\n\nreturn {\n  json: {\n    applicant_id: payload.job_applicant || 'Unbekannt',\n    position: payload.position || 'Unbekannt',\n    round_name: roundName || 'Fach- & Fit-Gespraech',\n    result: payload.result || 'Unbekannt',\n    average_rating: averageRating,\n    skill_assessments: skillsText,\n    feedback: payload.feedback || '',\n    feedback_sections: sections,\n    raw_skill_assessment: skills,\n    interview_id: payload.interview || '',\n    feedback_id: payload.name || ''\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3152,
+        1664
+      ],
+      "id": "7e0980b9-e911-4d29-9623-f4129969838f",
+      "name": "aggregate_data_r2"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant/' + encodeURIComponent($json.applicant_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3376,
+        1664
+      ],
+      "id": "021c2ebc-d0aa-418d-bfcc-925d42eb4ee2",
+      "name": "fetch_round1_data",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Opening/' + encodeURIComponent($json.job_title || ($json.data && $json.data.job_title) || '') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3600,
+        1664
+      ],
+      "id": "4a5e3b1e-54ac-4e24-90db-110bcaedff0f",
+      "name": "get_job_opening_r2",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Interview/' + encodeURIComponent($('aggregate_data_r2').first().json.interview_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3808,
+        1664
+      ],
+      "id": "deb0549a-c8ac-4d1c-9db3-ed4dfee5ce7a",
+      "name": "get_interview_r2",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const r2 = $('aggregate_data_r2').first().json;\n\nconst r1Response = $('fetch_round1_data').first().json;\nconst r1Data = r1Response.data || r1Response;\n\nconst dsgvoConsent = r1Data.custom_dsgvo_scoring_zustimmung;\nconst datenschutzConsent = r1Data.custom_datenschutzhinweis_bewerber;\n\nif (!dsgvoConsent || dsgvoConsent !== 1) {\n  throw new Error('DSGVO Scoring-Zustimmung fehlt oder nicht erteilt (custom_dsgvo_scoring_zustimmung = ' + dsgvoConsent + '). Abbruch.');\n}\n\nif (!datenschutzConsent || datenschutzConsent !== 1) {\n  throw new Error('Datenschutzhinweis-Zustimmung fehlt oder nicht erteilt (custom_datenschutzhinweis_bewerber = ' + datenschutzConsent + '). Abbruch.');\n}\n\nconst r1SummaryRaw = r1Data.custom_interview_summary || '';\nif (!r1SummaryRaw || r1SummaryRaw.trim() === '') {\n  throw new Error('Keine Zusammenfassung aus Runde 1 vorhanden. Runde 1 wurde vermutlich nicht durchlaufen oder noch nicht zusammengefasst.');\n}\n\nconst r1Passed = r1SummaryRaw.toLowerCase().includes('weiter zu runde 2');\nif (!r1Passed) {\n  throw new Error('Kandidat hat Runde 1 nicht bestanden. Fach- & Fit-Gespraech nicht zulaessig.');\n}\n\nconst firstName = r1Data.custom_vorname || '';\nconst lastName = r1Data.applicant_name || '';\nconst applicantName = (firstName + ' ' + lastName).trim();\n\nconst r1Summary = r1SummaryRaw;\nconst r1Skills = r1Data.custom_skill_assessment || [];\n\nconst r1SkillsText = Array.isArray(r1Skills) && r1Skills.length > 0\n  ? r1Skills.map(function(s) {\n      const name = s.skill || 'Unbekannt';\n      const rating = s.rating != null ? s.rating : '-';\n      return '- ' + name + ': ' + rating;\n    }).join('\\n')\n  : 'Keine Skill-Bewertungen aus Runde 1 vorhanden';\n\nconst cvSummary = r1Data.custom_zusammenfassung_cv || '';\n\nconst cvSkills = r1Data.custom_skills_und_technologien || [];\nconst cvSkillsText = Array.isArray(cvSkills) && cvSkills.length > 0\n  ? cvSkills.map(function(s) {\n      const tech = s.custom_cvskill_technologie || 'Unbekannt';\n      const level = s.custom_cveinstufung || '-';\n      return '- ' + tech + ': ' + level;\n    }).join('\\n')\n  : 'Keine CV-Skills vorhanden';\n\nconst cvCareer = r1Data.custom_beruflicher_werdegang || [];\nconst cvCareerText = Array.isArray(cvCareer) && cvCareer.length > 0\n  ? cvCareer.map(function(c) {\n      const title = c.custom_cvjobtitel__position || 'Unbekannt';\n      const company = c.custom_cvunternehmen || 'Unbekannt';\n      const period = c.custom_cvzeitraum || '-';\n      return '- ' + title + ' bei ' + company + ' (' + period + ')';\n    }).join('\\n')\n  : 'Kein beruflicher Werdegang vorhanden';\n\nconst jobOpeningId = r1Data.job_title || '';\n\nlet jobDescription = '';\nconst jobOpeningNode = $('get_job_opening_r2');\nif (jobOpeningNode) {\n  const jobOpeningResponse = jobOpeningNode.first().json;\n  const jd = jobOpeningResponse.data || jobOpeningResponse;\n  if (jd && jd.doctype === 'Job Opening') {\n    jobDescription = jd.description || jd.job_description || '';\n  }\n}\n\nlet interviewerName = '';\nlet interviewDate = '';\nconst interviewNode = $('get_interview_r2');\nif (interviewNode) {\n  const interviewResponse = interviewNode.first().json;\n  const interviewData = interviewResponse.data || interviewResponse;\n  if (interviewData && interviewData.doctype === 'Interview') {\n    interviewDate = interviewData.scheduled_on || '';\n    const details = interviewData.interview_details || [];\n    if (details.length > 0) {\n      interviewerName = details[0].interviewer || '';\n    }\n  }\n}\n\nconst sections = r2.feedback_sections || {};\nconst feedbackStructuredR2 = sections.overall\n  ? 'Gesamteindruck:\\n' + sections.overall\n    + (sections.strengths ? '\\n\\nStärken:\\n' + sections.strengths : '')\n    + (sections.weaknesses ? '\\n\\nSchwächen:\\n' + sections.weaknesses : '')\n    + (sections.culture ? '\\n\\nKultur:\\n' + sections.culture : '')\n    + (sections.logistics ? '\\n\\nLogistik:\\n' + sections.logistics : '')\n  : (r2.feedback || '');\n\nconst oldTechnicalSummary = r1Data.custom_summary_technical || '';\nconst oldTechnicalSkillAssessment = r1Data.custom_skill_assessment_technical || [];\n\nreturn {\n  json: {\n    applicant_id: r2.applicant_id,\n    applicant_name: applicantName,\n    position: r2.position,\n    round_name: r2.round_name,\n    result: r2.result,\n    average_rating_r2: r2.average_rating,\n    skill_assessments_r2: r2.skill_assessments,\n    feedback_r2: r2.feedback,\n    feedback_sections_r2: r2.feedback_sections,\n    feedback_structured_r2: feedbackStructuredR2,\n    raw_skill_assessment_r2: r2.raw_skill_assessment,\n    feedback_id_r2: r2.feedback_id,\n    interview_id_r2: r2.interview_id,\n    r1_summary: r1Summary,\n    r1_skills_text: r1SkillsText,\n    r1_raw_skills: r1Skills,\n    r1_screening_feedback_id: r1Data.custom_screening_feedback || '',\n    cv_summary: cvSummary,\n    cv_skills: cvSkillsText,\n    cv_career: cvCareerText,\n    job_opening_id: jobOpeningId,\n    job_description: jobDescription,\n    interviewer_name: interviewerName,\n    interview_date: interviewDate,\n    old_summary_technical: oldTechnicalSummary,\n    old_skill_assessment_technical: oldTechnicalSkillAssessment\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4032,
+        1664
+      ],
+      "id": "97128dd5-15d7-40bc-b99a-0e23ab428fda",
+      "name": "aggregate_r1_r2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# You are an HR expert for the final interview evaluation.\n\nCreate a detailed summary of the Technical & Fit Interview (Round 2) as running text in German, with a comparison to Round 1 and a final hiring recommendation.\n\n## Input Data\n\n### Round 2 (Technical & Fit Interview)\n\n- Candidate: {{ $json.applicant_name || $json.applicant_id }}\n- Position: {{ $json.position }}\n- Round: {{ $json.round_name }}\n- Result: {{ $json.result }}\n- Average Rating: {{ $json.average_rating_r2 }}/1\n\nSkill Assessments Round 2:\n{{ $json.skill_assessments_r2 }}\n\nInterviewer's Feedback Notes (Round 2):\n{{ $json.feedback_structured_r2 }}\n\n### Summary from Round 1 (Screening)\n\n{{ $json.r1_summary }}\n\nSkill Assessments Round 1:\n{{ $json.r1_skills_text }}\n\n### Candidate's CV Data\nCV Summary:\n{{ $json.cv_summary || 'No CV data available' }}\n\nCV Skills & Technologies:\n{{ $json.cv_skills }}\n\nProfessional Career:\n{{ $json.cv_career }}\n\n### Job Opening Requirements\n{{ $json.job_description || 'No job description available' }}\n\n## Task\n\nCreate a structured report (250-400 words) with the following sections:\n\n1. **Overall Impression** (summarizing both rounds, including alignment with CV and job requirements)\n2. **Comparison Round 1 vs. Round 2** – candidate development, consistent or contradictory assessments\n3. **Key Strengths** (from both rounds)\n4. **Key Weaknesses/Risks** (from both rounds)\n5. **Final Recommendation** – clear statement on whether the candidate should be hired (based on the specific job requirements)\n\n## Rules\n\n- Write concisely and clearly\n- Mention both positive and negative points\n- Highlight inconsistencies between Round 1 and Round 2\n- Watch for discrepancies between CV self-assessment and interview impressions from both rounds\n- Evaluate the fit against the specific job requirements, not just general qualities\n- All texts in German\n- No Markdown, only plain text (section headings are allowed)\n- Use the candidate's name, not their email address\n\n## Output Format\n\nReturn ONLY the running text, no JSON, no Markdown:\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        4240,
+        1664
+      ],
+      "id": "4de3a0c5-0a58-4ce4-aeee-8009c7a89483",
+      "name": "llm_chain_r2"
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        1872
+      ],
+      "id": "2a2edeb9-8a58-44eb-9a37-2cbc3c14bece",
+      "name": "or_chat_model_r2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const llmOutput = $input.first().json.output || $input.first().json.text || $input.first().json.content;\n\nif (!llmOutput) {\n  throw new Error('Kein LLM Output. Felder: ' + Object.keys($input.first().json).join(', '));\n}\n\nconst cleaned = llmOutput.replace(/```json/g, '').replace(/```/g, '').trim();\n\nconst aggr = $('aggregate_data_r2').first();\nconst combined = $('aggregate_r1_r2').first();\nconst jobApplicantId = aggr.json.applicant_id;\nconst rawSkills = aggr.json.raw_skill_assessment || [];\nconst result = aggr.json.result || '';\nconst feedbackId = aggr.json.feedback_id || '';\nconst interviewId = aggr.json.interview_id || '';\n\nconst interviewDate = combined ? combined.json.interview_date : '';\nconst interviewerName = combined ? combined.json.interviewer_name : '';\nconst processedDate = new Date().toISOString().split('T')[0];\n\nlet header = '=== Finale Interview-Bewertung ===\\n';\nheader += 'Interview-ID: ' + (interviewId || feedbackId) + '\\n';\nif (interviewDate) header += 'Interview-Datum: ' + interviewDate + '\\n';\nheader += 'Erstellt am: ' + processedDate + '\\n';\nif (interviewerName) header += 'Interviewer: ' + interviewerName + '\\n';\nheader += '----------------------------------------\\n\\n';\n\nconst isCleared = result.toLowerCase() === 'cleared';\n\nlet output = header + cleaned;\noutput += '\\n\\n---\\n';\noutput += 'Abschluss Fach- & Fit-Gespraech (Runde 2): ';\noutput += isCleared ? 'Einstellung empfohlen.' : 'Keine Einstellungsempfehlung.';\n\nconst skillAssessmentTable = rawSkills.map(function(s) {\n  return {\n    skill: s.skill || 'Unbekannt',\n    rating: s.rating != null ? s.rating : 0\n  };\n});\n\nconst updatePayload = {\n  custom_summary_technical: output,\n  custom_skill_assessment_technical: skillAssessmentTable,\n  custom_hard_and_softskills_feedback: feedbackId\n};\n\nif (combined && combined.json.old_summary_technical && combined.json.old_summary_technical.trim() !== '') {\n  updatePayload.custom_summary_technical_history = JSON.stringify([\n    {\n      version: combined.json.feedback_id_r2 || 'unknown',\n      date: processedDate,\n      summary: combined.json.old_summary_technical,\n      skills: combined.json.old_skill_assessment_technical || []\n    }\n  ]);\n}\n\nreturn {\n  json: {\n    job_applicant_id: jobApplicantId,\n    update_payload: updatePayload\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4576,
+        1664
+      ],
+      "id": "6e1becb1-cfbf-4379-b92b-c3d2b2c8fe51",
+      "name": "parse_and_format_r2"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://grp03.pia-web.ris.uni-due.de/api/resource/Job%20Applicant/' + encodeURIComponent($json.job_applicant_id) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.update_payload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4800,
+        1664
+      ],
+      "id": "b95536ca-8e66-41ac-b8e7-07e4c4489293",
+      "name": "save_to_erpnext_r2",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook_trigger_r2": {
+      "main": [
+        [
+          {
+            "node": "aggregate_data_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "aggregate_data_r2": {
+      "main": [
+        [
+          {
+            "node": "fetch_round1_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch_round1_data": {
+      "main": [
+        [
+          {
+            "node": "get_job_opening_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_job_opening_r2": {
+      "main": [
+        [
+          {
+            "node": "get_interview_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_interview_r2": {
+      "main": [
+        [
+          {
+            "node": "aggregate_r1_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "aggregate_r1_r2": {
+      "main": [
+        [
+          {
+            "node": "llm_chain_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "llm_chain_r2": {
+      "main": [
+        [
+          {
+            "node": "parse_and_format_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_and_format_r2": {
+      "main": [
+        [
+          {
+            "node": "save_to_erpnext_r2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "or_chat_model_r2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "llm_chain_r2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d90d1429-8d2e-4876-a594-1dd019f8ce1d",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "mwBVu8ezaU2WLEXs",
+  "tags": []
+}
