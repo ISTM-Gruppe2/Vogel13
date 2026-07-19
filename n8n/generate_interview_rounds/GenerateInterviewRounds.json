@@ -1,0 +1,219 @@
+{
+  "name": "GenerateInterviewRounds",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "job_opening_web_hook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        8704,
+        2688
+      ],
+      "id": "ff9947f1-a7ab-49bd-8634-3d860f2c2d38",
+      "name": "gen_job_interviews_webhook",
+      "webhookId": "05b6bee9-bb74-4799-a720-1eac11cb4af9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code Node: Format Interview Round for ERPNext\n// Input: LLM Chain output (JSON string) + Webhook data\n// Output: N items (one per skill), each carrying full context + all_skills\n\n// Get LLM output from previous node\nconst llmOutput = $input.first().json.text;\n\nconst cleanedOutput = llmOutput\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleanedOutput);\n} catch (error) {\n  console.error('JSON Parse Error:', error.message);\n  console.error('Raw LLM output:', llmOutput);\n  throw new Error('Invalid JSON from LLM: ' + error.message);\n}\n\nif (!parsed.round_name || !parsed.interview_type || !parsed.expected_skill_set) {\n  throw new Error('Missing required fields in LLM output');\n}\n\nconst webhookItem = $('gen_job_interviews_webhook').first();\nconst webhookData = webhookItem.json.body;\n\nif (!webhookData.custom_angefordert_von) {\n  throw new Error('Interviewer is required but custom_angefordert_von is empty');\n}\n\nconst allSkills = parsed.expected_skill_set.map((skill) => ({\n  skill_name: skill.skill,\n  description: skill.description\n}));\n\n// One item per skill, each with full context + all_skills for reconstruction\nreturn parsed.expected_skill_set.map((skill, index) => ({\n  json: {\n    skill_name: skill.skill,\n    description: skill.description,\n    idx: index + 1,\n    all_skills: allSkills,\n    round_name: parsed.round_name,\n    interview_type: parsed.interview_type,\n    job_opening: webhookData.name,\n    interviewers: [{ employee: webhookData.custom_angefordert_von }],\n    position: parsed.position || 1,\n    expected_average_rating: 0.0,\n    custom_job_requisition: webhookData.custom_job_requisition_id\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9248,
+        2688
+      ],
+      "id": "cfb14e66-aa31-4490-b31f-2df9cf925978",
+      "name": "format_interview"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# LLM Chain Prompt: Interview Round Generation\n\n## System Role\n\nYou are an HR expert specialized in creating structured interview rounds for technical job positions.\n\n## Task\n\nGenerate a structured interview round based on the provided job requirements profile.\n\n## Input Data\n\n- **Position:** {{ $json.body.designation }}\n- **Job ID:** {{ $json.body.name }}\n- **Job Requisition ID:** {{ $json.body.custom_job_requisition_id }}\n- **Requester (Interviewer):** {{ $json.body.custom_angefordert_von }}\n- **Requirements Profile:** {{ $json.body.custom_requirements_profil }}\n\n## Output Format\n\nReturn a valid JSON object with the following structure:\n\n```json\n{\n  \"round_name\": \"Descriptive round name in German\",\n  \"interview_type\": \"Screening / Kennenlernen\",\n  \"expected_skill_set\": [\n    {\n      \"skill\": \"Skill name (short, clear, in German)\",\n      \"description\": \"Brief description of what this skill entails (in German)\"\n    }\n  ],\n  \"position\": 1\n}\n```\n\n## Rules\n\n### 1. Round Name\n- Must be descriptive and specific to the position\n- Format: \"[Interview Type] - [Job Requisition ID] - [Focus Area]\"\n- Examples:\n  - \"Screening / Kennenlernen - HR-HIREQ-00006 - C# Backend Developer\"\n  - \"Screening / Kennenlernen - HR-HIREQ-00005 - Software Engineer\"\n- Must be in German\n- Include the Job Requisition ID from input data\n\n### 2. Interview Type\n**Fixed value - always use:**\n```\n\"Fach- und Fit-Gespräch\"\n```\nThis must match an existing Interview Type in ERPNext.\n\n### 3. Expected Skills\n- Extract skills from the requirements profile\n- Include ONLY skills from these categories:\n  - `technical_skill` → Technical competencies\n  - `frameworks` → Specific frameworks/libraries\n  - `methodology` → Working methods and processes\n  - `domain_knowledge` → Industry/domain expertise\n- EXCLUDE these categories:\n  - `education` → Degrees/certifications (not assessed in interview)\n  - `soft_skill` → Will be assessed in separate round\n- For each skill:\n  - `skill`: Short name in German (e.g., \"C# und .NET\", \"RESTful APIs\", \"SQL Server\")\n  - `description`: 1-sentence explanation in German based on the requirement description\n\n### 4. Position\n- Always set to `1` for the first interview round\n\n## Constraints\n\n- Output MUST be valid JSON (no markdown, no explanations, no code fences)\n- All text must be in German\n- Skills must match the extracted requirements (no additions, no interpretations)\n- Minimum 5 skills, maximum 10 skills in expected_skill_set\n- Prioritize skills by weight (higher weight = more important)\n- If more than 10 skills exist, select the top 10 by weight\n\n## Example Output\n\n```json\n{\n  \"round_name\": \"Screening / Kennenlernen - HR-HIREQ-00006 - C# Backend Developer\",\n  \"interview_type\": \"Screening / Kennenlernen\",\n  \"expected_skill_set\": [\n    {\n      \"skill\": \"C# und .NET\",\n      \"description\": \"Fundierte Kenntnisse in C# und .NET für die Backend-Entwicklung von Anwendungen\"\n    },\n    {\n      \"skill\": \"RESTful APIs\",\n      \"description\": \"Erfahrung im Entwurf und der Implementierung von RESTful APIs\"\n    },\n    {\n      \"skill\": \"SQL Server\",\n      \"description\": \"Erfahrung mit relationalen Datenbanken und Datenmodellierung\"\n    },\n    {\n      \"skill\": \"Software Architektur\",\n      \"description\": \"Verständnis von Software-Architektur-Prinzipien und Design-Patterns\"\n    },\n    {\n      \"skill\": \"Git\",\n      \"description\": \"Erfahrung mit Versionskontrollsystemen in kollaborativen Umgebungen\"\n    },\n    {\n      \"skill\": \"Agile Methoden\",\n      \"description\": \"Erfahrung in der Arbeit in agilen Entwicklungsumgebungen wie Scrum oder Kanban\"\n    },\n    {\n      \"skill\": \"CI/CD\",\n      \"description\": \"Vertrautheit mit CI/CD-Pipelines und automatisierten Bereitstellungsprozessen\"\n    },\n    {\n      \"skill\": \"Skalierbare Systemarchitektur\",\n      \"description\": \"Verständnis von skalierbarem Systemdesign und Performance-Optimierung\"\n    }\n  ],\n  \"position\": 1\n}\n```\n\n## Generate the interview round now.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        8912,
+        2688
+      ],
+      "id": "a6abab41-5073-42f5-8285-947c1e302cc9",
+      "name": "llm_chain"
+    },
+    {
+      "parameters": {
+        "model": "tencent/hy3:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        8912,
+        2896
+      ],
+      "id": "4556f1b8-9512-4bd3-a314-0458ab4380e2",
+      "name": "or_chat_model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "6bryUCpl9r04EdLI",
+          "name": "OpenRouter - Main Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Skill",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"skill_name\": \"{{ $json.skill_name }}\", \"description\": \"{{ $json.description }}\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        9472,
+        2688
+      ],
+      "id": "cbce10e7-f8d4-453e-bfd1-e4e52b65437a",
+      "name": "create_skills",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code Node: Build Interview Round after Skill creation\n// Reads context from format_interview (before HTTP overwrites it)\n// Output: Single Interview Round object for ERPNext API\n\nconst context = $('format_interview').first().json;\n\nconst interviewRound = {\n  doctype: 'Interview Round',\n  round_name: context.round_name,\n  interview_type: context.interview_type,\n  job_opening: context.job_opening,\n  expected_skill_set: context.all_skills.map((skill, i) => ({\n    doctype: 'Expected Skill Set',\n    skill: skill.skill_name,\n    description: skill.description,\n    idx: i + 1\n  })),\n  interviewers: context.interviewers,\n  position: context.position,\n  expected_average_rating: context.expected_average_rating,\n  custom_job_requisition: context.custom_job_requisition\n};\n\nreturn [{ json: interviewRound }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9680,
+        2688
+      ],
+      "id": "b31c3246-41e7-4c5a-944d-0c31a1fc6adc",
+      "name": "build_interview_round"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Round",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        9888,
+        2688
+      ],
+      "id": "71fb6dd1-ae73-4e57-9b29-10d4bcfcb3ff",
+      "name": "http_req",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "gen_job_interviews_webhook": {
+      "main": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "llm_chain": {
+      "main": [
+        [
+          {
+            "node": "format_interview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format_interview": {
+      "main": [
+        [
+          {
+            "node": "create_skills",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_skills": {
+      "main": [
+        [
+          {
+            "node": "build_interview_round",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "build_interview_round": {
+      "main": [
+        [
+          {
+            "node": "http_req",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "or_chat_model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "llm_chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "ffd1a7e1-a4f5-406c-9b1e-8708238f1469",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "Bso9Tr7ddDi1U3pw",
+  "tags": []
+}
