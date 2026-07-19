@@ -1,0 +1,7 @@
+01 - User Story:
+    + As: HR Professional / Recruiting Process +
+
+        As an HR professional, I want to automatically invite applicants via email to select from available interview time slots, 
+        capture their preferred times, and—if necessary—use AI to generate suitable alternative appointments, 
+        with the appropriate email being automatically sent to the applicant for every request or action, 
+        ensuring the interview process runs efficiently and transparently for me.
