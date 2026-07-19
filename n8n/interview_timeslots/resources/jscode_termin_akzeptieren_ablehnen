@@ -1,0 +1,21 @@
+const slots = $json.data.custom_timeslots_sugdate;
+const targetId = $('Webhook:Button Bestaetigen').first().json.body.childSlot_id;
+
+let acceptedSlotObject = null;
+
+const updatedSlots = slots.map(slot => {
+    if (slot.name === targetId) {
+        slot.custom_status_tslot = "Accepted";
+        acceptedSlotObject = { ...slot }; // kopie des "accepted" slot
+    } else {
+        slot.custom_status_tslot = "Rejected";
+    }
+    return slot;
+});
+
+return {
+    json: {
+        custom_timeslots_sugdate: updatedSlots,
+        accepted_slot: acceptedSlotObject
+    }
+};

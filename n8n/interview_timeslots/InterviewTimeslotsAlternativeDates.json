@@ -1,0 +1,167 @@
+{
+  "name": "InterviewTimeslotsAlternativeDates",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Interview%20Timeslots/{{ $json.body.dataName_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -512,
+        112
+      ],
+      "id": "c8a70df9-1ba1-41f5-b0ed-d2d8392b5f3c",
+      "name": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "ec231747-a3e1-4856-a1ea-d6d948a1fbb4",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alternativeslots-available",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -736,
+        112
+      ],
+      "id": "0fdf3742-c960-4187-a9bf-0e04c965bd39",
+      "name": "Webhook: Alternativtermine überprüft",
+      "webhookId": "10da0538-9fa2-4350-aa0f-7574b67c4913"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "02aeb806-92f6-4d4a-abbb-889a1a9e8bfd",
+              "leftValue": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_timeslots_sugdate.map(slot => slot.custom_status_tslot) }}\n\n",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        112
+      ],
+      "id": "a96ebf7a-91f2-4dec-be8f-1cd3d7d55da7",
+      "name": "If: Pending (Ausstehend)"
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_applicantmail_sugdate }}",
+        "subject": "=Neue Alternativ-Terminvorschläge für dein Interview als {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_designation_sugdate }} | JobID: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Neue Terminvorschläge für Ihr Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Alternativtermine überprüft').item.json.body.vorname }} {{ $('Webhook: Alternativtermine überprüft').item.json.body.nachname }},</h1>\n            \n           <p>wir haben nun intern Ihre <strong>Wunschzeiten</strong> überprüft und unter Berücksichtigung dieser haben wir neue Termine erstellt.</p>\n\n<p>Bitte klicken Sie auf den folgenden <strong>Button</strong>, um einen der neu für Sie hinterlegten Termine direkt zu bestätigen:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $('Webhook: Alternativtermine überprüft').item.json.body.Url }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt neuen Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sobald Sie sich für einen Termin entschieden haben, ist dieser fest für das Interview reserviert und Sie erhalten automatisch eine Bestätigung des Termins mit allen Details.</p>\n            \n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8c6c6fab-342b-48cd-9f46-da028126e34a",
+      "name": "Send Email: Verfuegbare Alternativtermine zusenden",
+      "webhookId": "68f53a66-7f00-4a55-a4aa-0714645096ed",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1": {
+      "main": [
+        [
+          {
+            "node": "If: Pending (Ausstehend)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Alternativtermine überprüft": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Alle Terminvorschlaege des Bewerbers holen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Pending (Ausstehend)": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Verfuegbare Alternativtermine zusenden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0bcf88ff-cd56-4336-ab73-482c387a9ba3",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "mEuAn9pnxNoOY8aZ",
+  "tags": []
+}

@@ -1,0 +1,83 @@
++++++ PROMPT +++++
+
+You are an experienced HR and recruiting expert. Your task is to precisely analyze the provided CV and extract the relevant data structurally as a JSON object.
+Analyze the CV and create a valid JSON object that exactly matches the field names of the ERPNext DocType "Bewerber".
+
+IMPORTANT:
+- Return EXCLUSIVELY the JSON object.
+- Do not write any introductory text, explanations, or markdown formatting.
+- Avoid generic phrasing as well as hallucinations.
+- Extract ALL certificates/training, skills & technologies, language skills, companies, and projects that can be found in the CV.
+- If the month is missing for time periods (e.g., professional history), enter YYYY.
+- In the field "custom_skills_und_technologien", all skills & technologies should be listed. This includes programming languages, frameworks/libraries, social/personal/methodological competencies, etc. 
+- Enter for YYYY (e.g., 2023-2025).
+- Under "custom_projects", only projects should be listed, and no activity descriptions should be taken from the "professional history", unless projects were explicitly mentioned.
+- Classification of skills: If "custom_cveinstufung" is not explicitly stated, realistically estimate the experience level (Grundkenntnisse, Fortgeschritten, Experte) based on the complexity of the tasks and achievements in the CV.
+
+Here is the CV text to be analyzed:
+{{ $json.text }}
+
+Adhere exactly to the specified structural schema for the output JSON object (strictly follow these field names and structures).
+
+{
+    "custom_zusammenfassung_cv": "Professional summary of the applicant in the 3rd person. Include the most important bullet points regarding tasks and core competencies from the professional experience/projects section, as well as other important skills and attributes from the CV.",
+    "custom_hoechster_bildungsabschluss": "Extract the highest degree (e.g., 'M.Sc. in Software Engineering' or 'B.Sc. in Maschinenbau' or 'Abitur').",
+    "custom_bildungsabschluss_note": "Example: 1.0 or 1,7"
+    "custom_gesamtberufsjahre": 0,
+    "custom_beruflicher_werdegang": [
+    {
+        "custom_cvunternehmen": "Name of the company",
+        "custom_cvjobtitel__position": "Position / Job title",
+        "custom_cvzeitraum": "Format: MM/YYYY - MM/YYYY or MM/YYYY - Heute"
+    }
+  ],
+  "custom_sprachkenntnisse": [
+    {
+        "custom_cvsprache": "Name of the language (e.g., Deutsch, Englisch)",
+        "custom_cvsprachniveau": "Allowed value (ONLY ONE): A1, A2, B1, B2, C1, C2, Muttersprache"
+    }
+  ],
+  "custom_skills_und_technologien": [
+    {
+        "custom_cvskill_technologie": "Name of the skill / technology / framework (e.g., Java, ERPNext, n8n, Javascript)",
+        "custom_cveinstufung": "Allowed value (ONLY ONE): Grundkenntnisse, Fortgeschritten, Experte"
+    }
+  ],
+  "custom_certificates": [
+    {
+        "custom_cvcertificates": "Name of the certificate / training",
+        "custom_cvdate_of_issue": "Format: MM/YYYY or MM/YYYY - MM/YYYY or YYYY or 'leave blank'"
+    }
+  ],
+  "custom_projects": [
+    {
+        "custom_cvproject": "Name of the project",
+        "custom_cvdescriptionproject": "Short description (tasks, goals, focus) of the project.",
+        "custom_cvtime_period": "Format: YYYY or 'leave blank'
+"
+    }
+  ],
+  "custom_github_profil": "",
+  "custom_linkedin_profil": "",
+  "required": [
+    "custom_zusammenfassung_cv",
+    "custom_hoechster_bildungsabschluss",
+    "custom_bildungsabschluss_note",
+    "custom_gesamtberufsjahre",
+    "custom_beruflicher_werdegang",
+    "custom_sprachkenntnisse",
+    "custom_skills_und_technologien",
+    "custom_certificates",
+    "custom_projects",
+    "custom_github_profil",
+    "custom_linkedin_profil"
+  ]
+}
+
++++++ POSSIBLE OUTPUT +++++
+
+[
+  {
+    "text": "{\n    \"custom_zusammenfassung_cv\": \"Anton Müller ist ein Senior Full-Stack Developer mit über 9 Jahren Berufserfahrung in der Softwareentwicklung. Er leitete das Redesign einer E-Commerce-Plattform und migrierte Monolithen zu Microservices. Er entwickelte datenintensive Fintech-Webanwendungen und REST-APIs sowie Open-Source-Tools wie TaskFlow (Go) und SmartHome Connect (Python/MQTT). Zu seinen Kernkompetenzen zählen JavaScript/TypeScript (Experte), Python, Go, React, Vue.js, Node.js, Django, Docker, Kubernetes, AWS sowie agile Methoden (Scrum/Kanban, TDD). Er verfügt über ein Scrum Master Zertifikat und AWS Cloud Practitioner Zertifizierung, ist analytisch, teamfähig und lernbereit.\",\n    \"custom_hoechster_bildungsabschluss\": \"Bachelor of Science in Angewandter Informatik\",\n    \"custom_bildungsabschluss_note\": \"\",\n    \"custom_gesamtberufsjahre\": 9,\n    \"custom_beruflicher_werdegang\": [\n        {\n            \"custom_cvunternehmen\": \"TechSolutions GmbH\",\n            \"custom_cvjobtitel__position\": \"Senior Full-Stack Developer\",\n            \"custom_cvzeitraum\": \"03/2021 - Heute\"\n        },\n        {\n            \"custom_cvunternehmen\": \"Innovation Web-Apps UG\",\n            \"custom_cvjobtitel__position\": \"Softwareentwickler\",\n            \"custom_cvzeitraum\": \"11/2016 - 02/2021\"\n        },\n        {\n            \"custom_cvunternehmen\": \"DevCore GmbH\",\n            \"custom_cvjobtitel__position\": \"Werkstudent im Bereich Softwareentwicklung\",\n            \"custom_cvzeitraum\": \"10/2014 - 08/2016\"\n        }\n    ],\n    \"custom_sprachkenntnisse\": [\n        {\n            \"custom_cvsprache\": \"Deutsch\",\n            \"custom_cvsprachniveau\": \"Muttersprache\"\n        },\n        {\n            \"custom_cvsprache\": \"Englisch\",\n            \"custom_cvsprachniveau\": \"C1\"\n        },\n        {\n            \"custom_cvsprache\": \"Spanisch\",\n            \"custom_cvsprachniveau\": \"A2\"\n        }\n    ],\n    \"custom_skills_und_technologien\": [\n        {\n            \"custom_cvskill_technologie\": \"JavaScript/TypeScript\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Python\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Go\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"SQL\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"React\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Vue.js\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Node.js\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Django\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Express\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Docker\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Kubernetes\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"AWS\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"GitHub Actions\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Scrum\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Kanban\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Test-Driven Development\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"PostgreSQL\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Git\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"CI/CD\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Analytische Denkweise\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Strukturierte Problemlösungskompetenz\",\n            \"custom_cveinstufung\": \"Experte\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Teamfähigkeit\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Agile Projektleitung\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        },\n        {\n            \"custom_cvskill_technologie\": \"Lernbereitschaft\",\n            \"custom_cveinstufung\": \"Fortgeschritten\"\n        }\n    ],\n    \"custom_certificates\": [\n        {\n            \"custom_cvcertificates\": \"AWS Cloud Practitioner\",\n            \"custom_cvdate_of_issue\": \"\"\n        },\n        {\n            \"custom_cvcertificates\": \"Scrum Master\",\n            \"custom_cvdate_of_issue\": \"\"\n        }\n    ],\n    \"custom_projects\": [\n        {\n            \"custom_cvproject\": \"TaskFlow\",\n            \"custom_cvdescriptionproject\": \"OpenSource CLI-basiertes Projektmanagement-Tool in Go, über 500 GitHub-Sterne.\",\n            \"custom_cvtime_period\": \"\"\n        },\n        {\n            \"custom_cvproject\": \"SmartHome Connect\",\n            \"custom_cvdescriptionproject\": \"Schnittstelle zur Automatisierung von IoT-Heimgeräten mit Python und MQTT-Protokoll.\",\n            \"custom_cvtime_period\": \"\"\n        }\n    ],\n    \"custom_github_profil\": \"github.com/amuellertech\",\n    \"custom_linkedin_profil\": \"linkedin.com/in/anton-mueller\"\n}"
+  }
+]

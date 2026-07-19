@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-body {
+            padding: 30px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .email-body h1 {
+            font-size: 20px;
+            color: #111827;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .btn-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .btn-primary {
+            display: inline-block;
+            background-color: #16a34a;
+            color: #ffffff !important;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            mso-padding-alt: 0;
+            text-underline-color: #16a34a;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container" role="article" aria-label="Neue Terminvorschläge für Ihr Vorstellungsgespräch">
+
+        <main class="email-body">
+            <h1>Hallo {{ $('Webhook: Alternativtermine überprüft').item.json.body.vorname }} {{ $('Webhook: Alternativtermine überprüft').item.json.body.nachname }},</h1>
+            
+           <p>wir haben nun intern Ihre <strong>Wunschzeiten</strong> überprüft und unter Berücksichtigung dieser haben wir neue Termine erstellt.</p>
+
+<p>Bitte klicken Sie auf den folgenden <strong>Button</strong>, um einen der neu für Sie hinterlegten Termine direkt zu bestätigen:</p>
+            
+            <div class="btn-container">
+                <a href="{{ $('Webhook: Alternativtermine überprüft').item.json.body.Url }}" class="btn-primary" target="_blank">
+                    <span aria-hidden="true">📅</span> Jetzt neuen Termin auswählen
+                </a>
+            </div>
+            
+            <p>Sobald Sie sich für einen Termin entschieden haben, ist dieser fest für das Interview reserviert und Sie erhalten automatisch eine Bestätigung des Termins mit allen Details.</p>
+            
+            
+            <p>Mit freundlichen Grüßen<br>
+            <span style="color: #111827; font-weight: bold;">Ihr HR-Team</span><br>
+            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen1').item.json.data.owner }}</p>
+        </main>
+
+        <footer class="email-footer">
+            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>
+            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.
+        </footer>
+        
+    </div>
+
+</body>
+</html>

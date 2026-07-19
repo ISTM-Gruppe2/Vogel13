@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-body {
+            padding: 30px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .email-body h1 {
+            font-size: 20px;
+            color: #111827;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .info-status {
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6; /* Blau signalisiert "In Bearbeitung" */
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1e3a8a;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container" role="article" aria-label="Bestätigung über den Erhalt Ihrer Wunschzeiten">
+
+        <main class="email-body">
+            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>
+            
+            <p>wir haben Ihre vorgeschlagenen <strong>Wunschzeiten</strong> für das Interview erfolgreich erhalten.</p>
+            
+            <p>Unser HR-Team wird Ihre Wunschzeiten umgehend überpüfen. Wir werden uns zeitnah mit neuen, passenden Terminvorschlägen unter Berücksichtigung Ihrer Angaben wieder bei Ihnen melden.</p>
+            
+            <p>Sollten Sie in der Zwischenzeit dringende Fragen haben, können Sie einfach direkt auf diese E-Mail antworten.</p>
+            
+            <p>Wir wünschen Ihnen noch einen schönen Tag und melden uns in Kürze wieder!</p>
+            
+            <p>Mit freundlichen Grüßen<br>
+            <span style="color: #111827; font-weight: bold;">Ihr HR-Team</span><br>
+            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.owner }}</p>
+        </main>
+
+        <footer class="email-footer">
+            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>
+            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.
+        </footer>
+        
+    </div>
+
+</body>
+</html>

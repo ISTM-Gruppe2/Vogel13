@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-body {
+            padding: 30px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .email-body h1 {
+            font-size: 20px;
+            color: #111827;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        /* Styling für die Termin-Infobox */
+        .appointment-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #16a34a;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .appointment-box p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        .appointment-box strong {
+            color: #111827;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container" role="article" aria-label="Terminbestätigung für Ihr Vorstellungsgespräch">
+
+        <!-- Body -->
+        <main class="email-body">
+            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>
+            
+            <p>vielen Dank für die Bestätigung des Termins. Wir freuen uns sehr auf das gemeinsame Interview mit Ihnen.</p>
+            
+            <p>Hier sind noch einmal alle Details zu unserem vereinbarten Termin auf einen Blick:</p>
+            
+            <div class="appointment-box">
+                <p><strong>Position:</strong>{{ $('Slot Akzeptiert').item.json.custom_designation_sugdate }}</p>
+                <p><strong>Ansprechpartner:</strong>{{ $('Slot Akzeptiert').item.json.owner }}</p>
+                <p><strong>Datum:</strong>{{ DateTime.fromISO($('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_interview_date_tslot).format('dd/MM/yyyy') }}</p>
+                <p><strong>Uhrzeit:</strong> {{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_start_time_tslot.toString().substring(0, 5) }} bis {{ $('JS Code: Termin akzeptieren / ablehnen').item.json.accepted_slot.custom_end_time_tslot.toString().substring(0, 5) }} Uhr</p>
+            </div>
+            
+            <p>Sollten sich Ihrerseits kurzfristig Änderungen ergeben oder Sie den Termin verschieben müssen, antworten Sie einfach direkt auf diese E-Mail, damit wir zeitnah eine Alternative finden können.</p>
+            
+            <p>Wir wünschen Ihnen bis dahin eine erfolgreiche Woche und freuen uns auf das Interview.</p>
+            
+            <p>Mit freundlichen Grüßen<br>
+            <span style="color: #111827; font-weight: bold;">Ihr HR-Team</span><br>
+            {{ $('Slot Akzeptiert').item.json.owner }}</p>
+        </main>
+
+        <footer class="email-footer">
+            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>
+            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.
+        </footer>
+        
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-body {
+            padding: 30px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .email-body h1 {
+            font-size: 20px;
+            color: #111827;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .btn-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .btn-primary {
+            display: inline-block;
+            background-color: #16a34a;
+            color: #ffffff !important;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            mso-padding-alt: 0;
+            text-underline-color: #16a34a;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container" role="article" aria-label="Einladung zum Vorstellungsgespräch">
+
+        <main class="email-body">
+            <h1>Hallo {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.vorname }} {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.nachname }} ,</h1>
+            
+           <p>vielen Dank für das angenehme erste Kennenlernen und Ihr anhaltendes Interesse an einer Zusammenarbeit mit uns.</p>
+            
+<p>Ihr Profil und unser bisheriger Austausch haben uns sehr überzeugt. Um nun gemeinsam mit unserer Fachabteilung tiefer in die fachlichen Aspekte einzusteigen und die Ausgestaltung der Position als <strong>{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.designation }}</strong> im Detail zu besprechen, laden wir Sie herzlich zu einem zweiten Interview ein.</p>
+            
+            <p>Um die Terminfindung für Sie so flexibel wie möglich zu gestalten, haben wir bereits einige passende Zeitfenster für Sie vorbereitet. Bitte klicken Sie auf den folgenden Link, <strong>um einen Termin zu bestätigen</strong>:</p>
+            
+            <div class="btn-container">
+                <a href="{{ $json.custom_urlinterviewdates_sugdate }}" class="btn-primary" target="_blank">
+                    <span aria-hidden="true">📅</span> Jetzt Termin auswählen
+                </a>
+            </div>
+            
+            <p>Sollte keiner der vorgeschlagenen Termine bei Ihnen passen, können Sie uns über dieselbe Seite auch ganz unkompliziert Ihre eigenen Wunschzeiten mitteilen.</p>
+            
+            <p>Wir freuen uns auf das Kennenlerngespräch mit Ihnen!</p>
+            
+            <p>Mit freundlichen Grüßen<br>
+            <span style="color: #111827; font-weight: bold;">Ihr HR-Team</span><br>
+            {{ $json.owner }}</p>
+        </main>
+
+        <footer class="email-footer">
+            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.
+        </footer>
+        
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-body {
+            padding: 30px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .email-body h1 {
+            font-size: 20px;
+            color: #111827;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container" role="article" aria-label="Bestätigung über den Rückzug Ihrer Bewerbung">
+
+        <main class="email-body">
+            <h1>Hallo {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantvorname_sugdate }} {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_applicantnachname_sugdate }},</h1>
+            
+            <p>vielen Dank für Ihre Nachricht und die offene Information, dass Sie Ihre Bewerbung für die Position als <strong>{{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_designation_sugdate }}</strong> zurückziehen möchten.</p>
+            
+            <p>Wir bedauern Ihre Entscheidung sehr, da uns Ihr Profil angesprochen hat. Gleichzeitig respektieren wir Ihren Schritt und danken Ihnen für die Zeit, die Sie in das Verfahren investiert haben.</p>
+            
+            <p>Für Ihren weiteren beruflichen und privaten Lebensweg wünschen wir Ihnen alles Gute und viel Erfolg.</p>
+            
+            <p>Mit freundlichen Grüßen<br>
+            <span style="color: #111827; font-weight: bold;">Ihr HR-Team</span><br>
+            {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.owner }}</p>
+        </main>
+
+        <footer class="email-footer">
+            Diese E-Mail wurde automatisch generiert. Bei Fragen antworten Sie einfach auf diese Nachricht.<br>
+            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.
+        </footer>
+        
+    </div>
+
+</body>
+</html>

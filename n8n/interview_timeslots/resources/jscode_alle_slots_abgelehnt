@@ -1,0 +1,15 @@
+const oldSlots = $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').first().json.data.custom_timeslots_sugdate;
+
+oldSlots.forEach(slot => {
+    if (slot.custom_status_tslot === "Pending") {
+        slot.custom_status_tslot = "Rejected"; 
+    }
+});
+
+const newSlots = $('Basic LLM Chain').first().json.output.new_slots;
+
+const allSlots = oldSlots.concat(newSlots);
+
+return {
+    all_timeslots: allSlots
+};

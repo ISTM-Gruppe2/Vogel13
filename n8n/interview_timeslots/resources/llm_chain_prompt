@@ -1,0 +1,67 @@
++++++ PROMPT +++++
+You are an HR employee and receive free-text statements from applicants regarding their preferred times for a job interview. 
+
+These statements can be unstructured, for example:
+“On 10.07.2026 in the morning or afternoon”
+“Next week Tuesday or Wednesday all day”
+
+Here is the free-text statement from the applicant: {{ $('Webhook:Button Bestaetigen').item.json.body.custom_prefdatetext_sugdate }}
+
+Here are the dates already proposed by the HR manager: {{ $('HTTP Request: Alle Terminvorschlaege des Bewerbers holen').item.json.data.custom_timeslots_sugdate.map(slot => slot.custom_interview_date_tslot + " von " + slot.custom_start_time_tslot + " - " + slot.custom_end_time_tslot).join(", ") }}
+
+Here are all currently scheduled job interviews: {{ $('Alle Interview holen').item.json.data.map(slot => slot.name + " , " + slot.job_applicant + " , " + slot.scheduled_on + " von " + slot.from_time + " - " + slot.to_time).join(" | ") }}
+
+Your task is to convert this text from the applicant into concrete, structured 1-hour interview time slots and output them in the following specified JSON format.
+
+IMPORTANT rules:
+- A maximum of 4 new alternative dates may be proposed, and they must not be identical to the dates already proposed. A minimum of 2 new dates must be proposed.
+- The status of the new alternative dates must be set to "Alternativtermin angefordert"
+- Alternative dates may only take place between Monday and Friday. Note today's date: {{ $now.format('cccc, dd.MM.yyyy') }}
+- Alternative dates must not be created in the past or on the same day. Note today's date: {{ $now.format('cccc, dd.MM.yyyy') }}. As an example: if the first proposed date is already on 14.07, then the new alternative date must not lie before that, e.g., on 13.07.
+- The alternative dates must NOT take place in the same time period as the scheduled job interviews
+- Dates may only lie between 09:00 AM and 05:00 PM (17:00).
+- Each date lasts exactly 1 hour.
+- “Morgens” (Early morning) corresponds to time slots between 09:00 and 10:00 AM.
+- “Vormittags” (Late morning) corresponds to time slots between 10:00 AM and 12:00 PM.
+- “Mittags” (Midday) corresponds to time slots between 12:00 PM and 02:00 PM (14:00).
+- “Nachmittags” (Afternoon) corresponds to time slots between 02:00 PM (14:00) and 05:00 PM (17:00).
+- “Ganzer Tag” (All day) means all possible 1-hour slots between 09:00 AM and 05:00 PM (17:00).
+- Relative statements like “next week Tuesday” must be converted into a concrete date."
+
+
++++++ POSSIBLE OUTPUT +++++
+[
+  {
+    "output": {
+      "new_slots": [
+        {
+          "custom_interview_date_tslot": "2026-07-29",
+          "custom_start_time_tslot": "10:00:00",
+          "custom_end_time_tslot": "11:00:00",
+          "custom_status_tslot": "Alternativtermin angefordert",
+          "parentfield": "custom_timeslots_sugdate",
+          "parenttype": "Job Interview Suggested Date",
+          "doctype": "Job Interview Timeslots"
+        },
+        {
+          "custom_interview_date_tslot": "2026-07-29",
+          "custom_start_time_tslot": "11:00:00",
+          "custom_end_time_tslot": "12:00:00",
+          "custom_status_tslot": "Alternativtermin angefordert",
+          "parentfield": "custom_timeslots_sugdate",
+          "parenttype": "Job Interview Suggested Date",
+          "doctype": "Job Interview Timeslots"
+        },
+        {
+          "custom_interview_date_tslot": "2026-07-30",
+          "custom_start_time_tslot": "10:00:00",
+          "custom_end_time_tslot": "11:00:00",
+          "custom_status_tslot": "Alternativtermin angefordert",
+          "parentfield": "custom_timeslots_sugdate",
+          "parenttype": "Job Interview Suggested Date",
+          "doctype": "Job Interview Timeslots"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,296 @@
+{
+  "name": "InterviewTimeslotsInvitation",
+  "nodes": [
+    {
+      "parameters": {
+        "action": "generate",
+        "dataPropertyName": "url_hash"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        256
+      ],
+      "id": "5507a30d-da73-4ee0-bc4c-49fefb5783b6",
+      "name": "Crypto: URL Hash generator"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "interview-tslots-suggestions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1216,
+        256
+      ],
+      "id": "f6079d85-de0c-4d04-abae-6d4f0bdea710",
+      "name": "Webhook: Bewerber Terminvorschlag Trigger",
+      "webhookId": "74af2d74-3908-455d-9400-0845b9c9e362"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "docType": "Interview%20Timeslots",
+        "documentName": "={{ $json.body.dataName_id }}",
+        "properties": {
+          "customProperty": [
+            {
+              "field": "custom_urlhash_sugdate",
+              "value": "={{ $json.url_hash }}"
+            },
+            {
+              "field": "custom_urlinterviewdates_sugdate",
+              "value": "=https://grp03.pia-web.ris.uni-due.de/int-timeslots?hash={{ $json.url_hash }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.erpNext",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        256
+      ],
+      "id": "42af2df3-40f2-4b13-87ef-eeb7daa04e2f",
+      "name": "Update Terminvorschlag HASH URL",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "201227b7-1977-4aaf-b827-82e4384160ee",
+              "leftValue": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.interview_round }}",
+              "rightValue": "Screening und Kennenlernen",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -352,
+        256
+      ],
+      "id": "44fe9e68-9da6-424d-b5c1-5c668cb04998",
+      "name": "If:Kennlerngespraech oder Fachgespraech"
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "subject": "=Einladung zum Interview als {{ $json.custom_designation_sugdate }} - JobID: {{ $json.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Einladung zum Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.vorname }} {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.nachname }} ,</h1>\n            \n            <p>vielen Dank für Ihre Bewerbung und das Interesse an einer Zusammenarbeit mit uns.</p>\n            \n            <p>Ihr Profil hat unser Interesse geweckt. Um tiefergehende Einblicke in Ihren Werdegang zu gewinnen und die Details der Position als <strong>{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.designation }}</strong> zu besprechen, laden wir Sie herzlich zu einem persönlichen <strong>Kennenlerngespräch</strong> ein.</p>\n            \n            <p>Um die Terminfindung für Sie so flexibel wie möglich zu gestalten, haben wir bereits einige passende Zeitfenster für Sie vorbereitet. Bitte klicken Sie auf den folgenden Link, <strong>um einen Termin zu bestätigen</strong>:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $json.custom_urlinterviewdates_sugdate }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sollte keiner der vorgeschlagenen Termine bei Ihnen passen, können Sie uns über dieselbe Seite auch ganz unkompliziert Ihre eigenen Wunschzeiten mitteilen.</p>\n            \n            <p>Wir freuen uns auf das Kennenlerngespräch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $json.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $json.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        112
+      ],
+      "id": "00b27056-80bb-4142-9e63-6406eb6d7ad0",
+      "name": "Send Email: Einladung Kennlerngespräch",
+      "webhookId": "a3ee9e15-9535-4bda-8a12-2725ef41e3d3",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "vogeldreizehn@proton.me",
+        "toEmail": "={{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "subject": "=Einladung zum Interview als {{ $json.custom_designation_sugdate }} - JobID: {{ $json.custom_jobofferid_sugdate }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            background-color: #f4f6f8;\n            margin: 0;\n            padding: 0;\n            -webkit-font-smoothing: antialiased;\n        }\n        .email-container {\n            max-width: 600px;\n            margin: 20px auto;\n            background: #ffffff;\n            border: 1px solid #e2e8f0;\n            border-radius: 8px;\n            overflow: hidden;\n        }\n        .email-body {\n            padding: 30px;\n            color: #374151;\n            line-height: 1.6;\n            font-size: 16px;\n        }\n\n        .email-body h1 {\n            font-size: 20px;\n            color: #111827;\n            margin-top: 0;\n            font-weight: 700;\n        }\n        .btn-container {\n            margin: 30px 0;\n            text-align: center;\n        }\n        .btn-primary {\n            display: inline-block;\n            background-color: #16a34a;\n            color: #ffffff !important;\n            padding: 12px 24px;\n            font-weight: bold;\n            text-decoration: none;\n            border-radius: 6px;\n            font-size: 16px;\n            mso-padding-alt: 0;\n            text-underline-color: #16a34a;\n        }\n        .email-footer {\n            background-color: #f8fafc;\n            padding: 20px;\n            text-align: center;\n            font-size: 13px;\n            color: #6b7280;\n            border-top: 1px solid #e2e8f0;\n        }\n    </style>\n</head>\n<body>\n\n    <div class=\"email-container\" role=\"article\" aria-label=\"Einladung zum Vorstellungsgespräch\">\n\n        <main class=\"email-body\">\n            <h1>Hallo {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.vorname }} {{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.nachname }} ,</h1>\n            \n           <p>vielen Dank für das angenehme erste Kennenlernen und Ihr anhaltendes Interesse an einer Zusammenarbeit mit uns.</p>\n            \n<p>Ihr Profil und unser bisheriger Austausch haben uns sehr überzeugt. Um nun gemeinsam mit unserer Fachabteilung tiefer in die fachlichen Aspekte einzusteigen und die Ausgestaltung der Position als <strong>{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.designation }}</strong> im Detail zu besprechen, laden wir Sie herzlich zu einem zweiten Interview ein.</p>\n            \n            <p>Um die Terminfindung für Sie so flexibel wie möglich zu gestalten, haben wir bereits einige passende Zeitfenster für Sie vorbereitet. Bitte klicken Sie auf den folgenden Link, <strong>um einen Termin zu bestätigen</strong>:</p>\n            \n            <div class=\"btn-container\">\n                <a href=\"{{ $json.custom_urlinterviewdates_sugdate }}\" class=\"btn-primary\" target=\"_blank\">\n                    <span aria-hidden=\"true\">📅</span> Jetzt Termin auswählen\n                </a>\n            </div>\n            \n            <p>Sollte keiner der vorgeschlagenen Termine bei Ihnen passen, können Sie uns über dieselbe Seite auch ganz unkompliziert Ihre eigenen Wunschzeiten mitteilen.</p>\n            \n            <p>Wir freuen uns auf das Kennenlerngespräch mit Ihnen!</p>\n            \n            <p>Mit freundlichen Grüßen<br>\n            <span style=\"color: #111827; font-weight: bold;\">Ihr HR-Team</span><br>\n            {{ $json.owner }}</p>\n        </main>\n\n        <footer class=\"email-footer\">\n            © 2026 ISTM Bachelorproject. Alle Rechte vorbehalten.\n        </footer>\n        \n    </div>\n\n</body>\n</html>",
+        "options": {
+          "ccEmail": "={{ $json.owner }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        352
+      ],
+      "id": "9a992779-cd07-4b34-b571-18c711878c4e",
+      "name": "Send Email: Einladung Fachgespraech",
+      "webhookId": "a3ee9e15-9535-4bda-8a12-2725ef41e3d3",
+      "credentials": {
+        "smtp": {
+          "id": "Pg9Pu9szIvvZbeLL",
+          "name": "SMTP account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('Webhook: Bewerber Terminvorschlag Trigger').item.json.body.email_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "Einladung ausstehend"
+            },
+            {
+              "name": "custom_invitation_senton",
+              "value": "={{ $json.custom_interviewer_sugdate[0].creation }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        256
+      ],
+      "id": "9d478585-4eb0-44bd-a8ca-e34321f6d441",
+      "name": "Update Bewerberstatus",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "if \ntrue=Kennlerngespräch",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "c34db32b-d39b-4dd8-8e54-21afd5884d3a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "if false=Fachgespraech",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        560
+      ],
+      "id": "ce1c6342-cf84-42a8-8340-27444d418492",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Crypto: URL Hash generator": {
+      "main": [
+        [
+          {
+            "node": "Update Terminvorschlag HASH URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Bewerber Terminvorschlag Trigger": {
+      "main": [
+        [
+          {
+            "node": "Crypto: URL Hash generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Terminvorschlag HASH URL": {
+      "main": [
+        [
+          {
+            "node": "Update Bewerberstatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Bewerberstatus": {
+      "main": [
+        [
+          {
+            "node": "If:Kennlerngespraech oder Fachgespraech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If:Kennlerngespraech oder Fachgespraech": {
+      "main": [
+        [
+          {
+            "node": "Send Email: Einladung Kennlerngespräch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email: Einladung Fachgespraech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cc4f7321-5a5a-4d07-810a-7b0e86019795",
+  "meta": {
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "VOeTQIPiFmpd5WyH",
+  "tags": []
+}

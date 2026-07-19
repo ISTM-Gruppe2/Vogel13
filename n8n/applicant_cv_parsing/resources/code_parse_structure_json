@@ -1,0 +1,36 @@
+const raw = $input.first().json.text || '';
+let parsed;
+
+parsed = JSON.parse(raw);
+
+// Bewerber aus Webhook holen
+const applicantName = $('Webhook: CV Applicant').first().json.body.name;
+
+// JSON ausgeben
+return [{
+  json: {
+    applicantName,
+    custom_zusammenfassung_cv: 
+      parsed.custom_zusammenfassung_cv,
+    custom_hoechster_bildungsabschluss:
+      parsed.custom_hoechster_bildungsabschluss,
+    custom_bildungsabschluss_note:
+        parsed.custom_bildungsabschluss_note,
+    custom_gesamtberufsjahre:
+      Math.round(parsed.custom_gesamtberufsjahre),
+    custom_beruflicher_werdegang: 
+      parsed.custom_beruflicher_werdegang,
+    custom_sprachkenntnisse:
+      parsed.custom_sprachkenntnisse,
+    custom_skills_und_technologien:
+      parsed.custom_skills_und_technologien,
+    custom_certificates:
+      parsed.custom_certificates,
+    custom_projects:
+      parsed.custom_projects,
+    custom_github_profil:
+      parsed.custom_github_profil,
+    custom_linkedin_profil: 
+      parsed.custom_linkedin_profil
+  }
+}];
