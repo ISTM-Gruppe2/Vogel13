@@ -1,0 +1,247 @@
+document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlHash = urlParams.get("hash") || "";
+    // n8n Webooks
+    const n8nWebhookUrl = `https://pia-web.ris.uni-due.de/n8n/webhook/interview-tslots-suggestions?hash=${encodeURIComponent(urlHash)}`;
+    const n8nConfirmUrl = "https://pia-web.ris.uni-due.de/n8n/webhook/confirm-button-inttslots";
+
+    const tableBody = document.getElementById("table-body");
+    const loadingText = document.getElementById("loading-text");
+    const table = document.getElementById("slots-table");
+    const infoBox = document.getElementById("info-box");
+    const confirmationMessage = document.getElementById("confirmation-message");
+    const alternativeSection = document.getElementById("alternative-section");
+    const alternativeText = document.getElementById("alternative-text");
+    const btnSubmitAlternative = document.getElementById("btn-submit-alternative");
+    const slotsText = document.querySelector(".slots-text");
+    const withdrawSection = document.getElementById("withdraw-section");
+    const withdrawModal = document.getElementById("withdraw-modal");
+    const btnOpenWithdrawModal = document.getElementById("btn-open-withdraw-modal");
+    const btnCloseModal = document.getElementById("btn-close-modal");
+    const btnConfirmWithdraw = document.getElementById("btn-confirm-withdraw");
+    const withdrawReasonInput = document.getElementById("withdraw-reason");
+
+    let parentMainId = "";
+
+    // Datum und Uhrzeit formatieren
+    function formatDateTime(rawDate, rawStart, rawEnd) {
+        const [year, month, day] = (rawDate || "").split("-");
+        return {
+            displayDate: year ? `${day}.${month}.${year}` : "",
+            start: rawStart ? rawStart.substring(0, 5) : "",
+            end: rawEnd ? rawEnd.substring(0, 5) : ""
+        };
+    }
+
+    function updateApplicantInfo(docData) {
+        const fullName = `${docData.custom_applicantvorname_sugdate || ""} ${docData.custom_applicantnachname_sugdate || ""}`.trim();
+        document.getElementById("info-name").innerText = fullName || "Nicht angegeben";
+        document.getElementById("info-email").innerText = docData.custom_applicantmail_sugdate || "Nicht angegeben";
+       
+        document.getElementById("info-joboffer").innerText = docData.custom_jobofferid_sugdate || "Nicht angegeben";
+        document.getElementById("info-position").innerText = docData.custom_designation_sugdate || "Nicht angegeben";
+        const interviewer = Array.isArray(docData.custom_interviewer_sugdate) && docData.custom_interviewer_sugdate[0];
+        document.getElementById("info-employee").innerText = interviewer ? interviewer.interviewer : "Nicht angegeben";
+    }
+
+    function hideSelectionUI() {
+        table.style.display = "none";
+        alternativeSection.style.display = "none"; 
+        if (slotsText) slotsText.style.display = "none";
+        if (withdrawModal) withdrawModal.style.display = "none";
+        confirmationMessage.style.display = "block";
+    }
+
+    // Tabelle für Termine anzeigen
+    function renderSlots(slots) {
+        tableBody.innerHTML = slots.map(slot => {
+            const { displayDate, start, end } = formatDateTime(
+                slot.custom_interview_date_tslot,
+                slot.custom_start_time_tslot,
+                slot.custom_end_time_tslot
+            );
+            return `
+                <tr>
+                    <td>${displayDate}</td>
+                    <td><strong>${start} - ${end} Uhr</strong></td>
+                    <td>
+                        <button type="button" class="btn-select"
+                            data-date="${slot.custom_interview_date_tslot}"
+                            data-from="${slot.custom_start_time_tslot}"
+                            data-to="${slot.custom_end_time_tslot}"
+                            data-id="${slot.name}">
+                            Bestätigen
+                        </button>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    // Button-Click-Event für die Auswahl eines Termins
+    tableBody.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".btn-select");
+        if (!btn) return;
+
+        const { date, from, to, id } = btn.dataset;
+        const { displayDate, start, end } = formatDateTime(date, from, to);
+
+        try {
+            const res = await fetch(n8nConfirmUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ childSlot_id: id, parentMain_id: parentMainId, hash: urlHash })
+            });
+            if (!res.ok) throw new Error();
+
+            confirmationMessage.innerText = `Vielen Dank, Ihr Interviewtermin am ${displayDate} von ${start} bis ${end} Uhr wurde bestätigt.\n\nSie erhalten außerdem eine zusätzliche Terminbestätigung per E-Mail.`;
+            hideSelectionUI();
+        } catch {
+            alert("Der Termin konnte nicht bestätigt werden. Bitte versuchen Sie es erneut.");
+        }
+    });
+
+    // Button-Click-Event für die Übermittlung von Wunschzeiten
+    btnSubmitAlternative.addEventListener("click", async () => {
+        const textValue = alternativeText.value.trim();
+        if (!textValue) return alert("Bitte geben Sie einen Text mit Ihren Wunschzeiten in das Feld ein.");
+
+        btnSubmitAlternative.disabled = true;
+        btnSubmitAlternative.innerText = "Wird gesendet...";
+
+        try {
+            const res = await fetch(n8nConfirmUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    parentMain_id: parentMainId,
+                    hash: urlHash,
+                    custom_prefdatetext_sugdate: textValue,
+                    altReq: "alternative_requested"
+                })
+            });
+            if (!res.ok) throw new Error();
+
+            confirmationMessage.className = "confirmation-message confirmation-alternativedate";
+            confirmationMessage.innerText = "Vielen Dank, wir haben Ihre Wunschzeiten erhalten.\n\nUnser HR-Team prüft diese und wird Ihnen zeitnah neue Vorschläge zukommen lassen.";
+            hideSelectionUI();
+        } catch {
+            alert("Ihre Anfrage konnte nicht übermittelt werden. Bitte versuchen Sie es erneut.");
+            btnSubmitAlternative.disabled = false;
+            btnSubmitAlternative.innerText = "Wunschzeiten absenden";
+        }
+    });
+
+    // Pop-up Steuerung für das Zurückziehen der Bewerbung
+    if (btnOpenWithdrawModal && withdrawModal) {
+        btnOpenWithdrawModal.addEventListener("click", () => {
+            withdrawModal.style.display = "flex";
+        });
+    }
+
+    if (btnCloseModal && withdrawModal) {
+        btnCloseModal.addEventListener("click", () => {
+            withdrawModal.style.display = "none";
+            withdrawReasonInput.value = "";
+        });
+    }
+
+    // Übermittlung das zurückziehen der Bewerbung aus dem Pop-up heraus an n8n-Webhook
+    if (btnConfirmWithdraw) {
+        btnConfirmWithdraw.addEventListener("click", async () => {
+            const reasonText = withdrawReasonInput.value.trim();
+
+            btnConfirmWithdraw.disabled = true;
+            btnConfirmWithdraw.innerText = "Wird verarbeitet...";
+            if (btnCloseModal) btnCloseModal.style.display = "none";
+
+            try {
+                const res = await fetch(n8nConfirmUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        parentMain_id: parentMainId,
+                        hash: urlHash,
+                        withdrawReq: "withdraw_requested",
+                        withdrawReason: reasonText
+                    })
+                });
+                if (!res.ok) throw new Error();
+
+                confirmationMessage.className = "confirmation-message";
+                confirmationMessage.style.backgroundColor = "#f3f4f6";
+                confirmationMessage.style.borderColor = "#d1d5db";
+                confirmationMessage.style.color = "#374151";
+                confirmationMessage.innerText = "Ihre Bewerbung wurde erfolgreich zurückgezogen. Sie erhalten zudem noch eine Bestätigung per E-Mail.\n\nWir haben die Benachrichtigung an unser HR-Team weitergeleitet.\nVielen Dank für Ihr bisheriges Interesse. Wir wünschen Ihnen für Ihre berufliche und private Zukunft alles Gute.";
+                
+                hideSelectionUI();
+                if (withdrawSection) withdrawSection.style.display = "none";
+                
+                // Timer um auf die "Startseite" bzw. auf "Login" geleitet zu werden
+                setTimeout(() => {
+                    window.location.href = "https://grp03.pia-web.ris.uni-due.de/login";
+                }, 5000);
+                
+            } catch (error) {
+                console.error("Fehler beim Zurückziehen der Bewerbung:", error);
+                alert("Ihre Bewerbung konnte nicht zurückgezogen werden. Bitte versuchen Sie es erneut.");
+                btnConfirmWithdraw.disabled = false;
+                btnConfirmWithdraw.innerText = "Ja, endgültig zurückziehen";
+                if (btnCloseModal) btnCloseModal.style.display = "inline-block";
+            }
+        });
+    }
+
+    // Laden der Daten vom n8n-Webhook
+    try {
+        const response = await fetch(n8nWebhookUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        const docData = data.data && data.data[0] ? data.data[0] : data;
+        parentMainId = docData.name;
+        const slotsForTable = docData.custom_timeslots_sugdate || [];
+        const pendingSlots = slotsForTable.filter(slot => slot.custom_status_tslot === "Pending");
+
+        updateApplicantInfo(docData);
+        infoBox.style.display = "flex";
+        loadingText.style.display = "none";
+        
+        if (withdrawSection) withdrawSection.style.display = "block";
+
+        // Bereits Alternativtermine angefragt
+        if (data.status === "alternative_dates_requested") {
+            confirmationMessage.className = "confirmation-message confirmation-alternativedate";
+            confirmationMessage.innerText = "Sie haben uns bereits Ihre Wunschzeiten mitgeteilt.\n\nDie oben angegebenen Termine sind die aktuell verfügbaren Optionen, bei denen Ihre Wunschzeiten berücksichtigt wurden.\nBitte bestätigen Sie einen dieser vorgeschlagenen Termine.\n\nSollten Ihnen keine Termine angezeigt werden, melden Sie sich bitte schnellstmöglich bei Ihrem Ansprechpartner.";
+            confirmationMessage.style.display = "block";
+            
+            renderSlots(pendingSlots);
+            table.style.display = "table";
+            alternativeSection.style.display = "none";
+            if (withdrawSection) withdrawSection.style.display = "block"; 
+            return;
+        }
+
+        // Bereits ein Termin akzeptiert
+        const acceptedSlot = slotsForTable.find(slot => slot.custom_status_tslot === "Accepted");
+        if (acceptedSlot) {
+            const { displayDate, start, end } = formatDateTime(
+                acceptedSlot.custom_interview_date_tslot, 
+                acceptedSlot.custom_start_time_tslot, 
+                acceptedSlot.custom_end_time_tslot
+            );
+            confirmationMessage.innerText = `Ihr Interviewtermin ist bereits bestätigt:\nDas Gespräch findet am ${displayDate} von ${start} bis ${end} Uhr statt.\n\nEine Bestätigung per E-Mail wurde bereits versendet.\nBei Fragen oder Unklarheiten steht Ihnen Ihr persönlicher Ansprechpartner gerne zur Verfügung.`;
+            hideSelectionUI();
+            return;
+        }
+
+        // Standard Anzeige der Termine
+        renderSlots(pendingSlots);
+        table.style.display = "table";
+        alternativeSection.style.display = "block";
+        if (withdrawSection) withdrawSection.style.display = "block"; 
+
+    } catch (error) {
+        console.error("Fehler beim Laden der Termine:", error);
+        loadingText.innerText = "Fehler beim Laden der Termine. Bitte versuchen Sie es später erneut.";
+    }
+});

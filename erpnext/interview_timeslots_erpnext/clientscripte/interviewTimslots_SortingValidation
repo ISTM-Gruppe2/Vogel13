@@ -1,0 +1,53 @@
+frappe.ui.form.on('Interview Timeslots', {
+    refresh: function(frm) {
+        sortTimeslots(frm);
+    },
+    validate: function(frm) {
+        
+        let error_message = false;
+        
+        let check_interviewer_entries = frm.doc.custom_interviewer_sugdate.filter(row => row.interviewer && row.interviewer.trim !== "");
+        
+        if (check_interviewer_entries.length === 0) {
+            frappe.msgprint({
+                title: __('Fehlender Befrager'),
+                message: __('Bitte füge mindestens einen Befrager hinzu.')
+            });
+            error_message = true;
+        }
+        
+        if (frm.doc.custom_timeslots_sugdate) {
+            let today = frappe.datetime.get_today();
+            frm.doc.custom_timeslots_sugdate.forEach(row => {
+                if (row.custom_interview_date_tslot && row.custom_interview_date_tslot < today) {
+                    frappe.msgprint({
+                        title: __('Terminvorschläge: Ungültiges Datum'),
+                        message: __('In Zeile {0}: {1} liegt in der Vergangenheit.', [row.idx, frappe.datetime.str_to_user(row.custom_interview_date_tslot)])
+                    });
+                    error_message = true;
+                }
+            });
+        }
+        
+        if (error_message){
+            frappe.validated = false;
+            return;
+        }
+        
+        sortTimeslots(frm);
+    }
+});
+
+function sortTimeslots(frm) {
+    if (frm.doc.custom_timeslots_sugdate && frm.doc.custom_timeslots_sugdate.length > 0) {
+        frm.doc.custom_timeslots_sugdate.sort((a, b) => {
+            return new Date(a.custom_interview_date_tslot) - new Date(b.custom_interview_date_tslot);
+        });
+        
+        frm.doc.custom_timeslots_sugdate.forEach((row, index) => {
+            row.idx = index + 1;
+        });
+        
+        frm.refresh_field('custom_timeslots_sugdate');
+    }
+}

@@ -1,0 +1,11 @@
+frappe.ui.form.on('Job Applicant', { 
+    status: function(frm) {
+        if (['Rejected', 'Bewerbung zurückgezogen'].includes(frm.doc.status)) {
+            if (!frm.doc.custom_timestamp_applicant_reject_withdrawn) {
+                frm.set_value('custom_timestamp_applicant_reject_withdrawn', frappe.datetime.get_today());
+            }
+        } else {
+            frm.set_value('custom_timestamp_applicant_reject_withdrawn', null);
+        }
+    }
+});
