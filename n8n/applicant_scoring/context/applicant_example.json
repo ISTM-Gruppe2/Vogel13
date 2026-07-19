@@ -1,0 +1,128 @@
+{
+  "custom_zusammenfassung_cv": "Markus Vogel ist ein erfahrener Senior Java Entwickler mit über 6 Jahren Berufserfahrung in der Entwicklung hochskalierbarer Finanz- und Zahlungssysteme. Er verfügt über tiefe Expertise in der Modernisierung von Legacy-Systemen hin zu cloud-nativen Microservice-Architekturen unter Einsatz von Java 21, Quarkus, Spring Boot und gRPC. Zu seinen Kernkompetenzen zählen die Architektur verteilter Systeme, Performance-Optimierung (CPU-Reduktion 45%, Batch-Laufzeiten -50%), Observability (OpenTelemetry, MTTR -60%) sowie der Aufbau automatisierter CI/CD-Pipelines auf Azure/Kubernetes. Er führte ein 4-köpfiges Team fachlich, etablierte Event Storming für Architekturentscheidungen und trieb die ISO-20022-Migration mit signifikanten Qualitätsverbesserungen voran. Sein technischer Stack umfasst Java, Cloud-Infrastruktur (Azure, AKS, Terraform), Datenbanken (Oracle, PostgreSQL) und Messaging. Er besitzt einen M.Sc. in Informatik (Note 1,8) der TU Dortmund und verhandlungssichere Englischkenntnisse (C1).",
+  "custom_hoechster_bildungsabschluss": "M.Sc. Informatik",
+  "custom_bildungsabschluss_note": "1,8",
+  "custom_gesamtberufsjahre": 7,
+  "custom_beruflicher_werdegang": [
+    {
+      "custom_cvunternehmen": "boradus AG",
+      "custom_cvjobtitel__position": "Senior Java Entwickler",
+      "custom_cvzeitraum": "01/2023 - Heute"
+    },
+    {
+      "custom_cvunternehmen": "FinCloud Systems GmbH",
+      "custom_cvjobtitel__position": "Java Entwickler",
+      "custom_cvzeitraum": "11/2019 - 12/2022"
+    }
+  ],
+  "custom_sprachkenntnisse": [
+    {
+      "custom_cvsprache": "Deutsch",
+      "custom_cvsprachniveau": "Muttersprache"
+    },
+    {
+      "custom_cvsprache": "Englisch",
+      "custom_cvsprachniveau": "C1"
+    }
+  ],
+  "custom_skills_und_technologien": [
+    {
+      "custom_cvskill_technologie": "Java 11/17/21",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Spring Boot",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Quarkus",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "gRPC",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Hibernate",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "JUnit 5",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Testcontainers",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Azure (AKS, Azure DevOps)",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Kubernetes",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Docker",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Terraform",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Git",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Maven",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "OpenTelemetry",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Oracle",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "PostgreSQL",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Redis",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Apache ActiveMQ",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Event Storming",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "Microservices Architecture",
+      "custom_cveinstufung": "Experte"
+    },
+    {
+      "custom_cvskill_technologie": "Reactive Streams",
+      "custom_cveinstufung": "Fortgeschritten"
+    },
+    {
+      "custom_cvskill_technologie": "ISO-20022",
+      "custom_cveinstufung": "Fortgeschritten"
+    }
+  ],
+  "custom_certificates": [],
+  "custom_projects": [
+    {
+      "custom_cvproject": "ISO-20022-Migration",
+      "custom_cvdescriptionproject": "Umstellung des Zahlungsverkehrssystems auf ISO-20022-Standard mit automatischer Nachrichtenvalidierung. Entwicklung eines gRPC-basierten Validierungsservices, Fehlerquote bei Zahlungseingängen von 3% auf 0,1% gesenkt.",
+      "custom_cvtime_period": "2024-2025"
+    }
+  ],
+  "custom_github_profil": "github.com/mvogel-dev",
+  "custom_linkedin_profil": "markus-vogel-java"
+}
