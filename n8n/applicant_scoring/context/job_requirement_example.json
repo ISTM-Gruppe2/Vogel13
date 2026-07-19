@@ -1,0 +1,80 @@
+{
+  "custom_temperature": "0.0",
+  "custom_requirements_profil": {
+    "job_id": "HR-HIREQ-00010",
+    "job_title": "Senior Java Developer",
+    "total_max_score": 100,
+    "requirements": [
+      {
+        "req_id": "R001",
+        "category": "education",
+        "description": "Abgeschlossenes Studium der Informatik, Wirtschaftsinformatik oder vergleichbare Qualifikation",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R002",
+        "category": "experience",
+        "description": "Mindestens 5 Jahre Berufserfahrung in der Entwicklung von Java-basierten Backend-Systemen mit Schwerpunkt Spring Boot",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R003",
+        "category": "frameworks",
+        "description": "Tiefgehende Kenntnisse im Spring Ecosystem einschliesslich Spring Boot, Spring Integration, Spring Security und Spring Data",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R004",
+        "category": "technical_skill",
+        "description": "Fundierte Erfahrung in der Definition und Dokumentation von RESTful APIs mit OpenAPI/Swagger",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R005",
+        "category": "technical_skill",
+        "description": "Umfassendes Wissen in Softwarearchitektur, Design Patterns, Clean Code und Domain-Driven Design",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R006",
+        "category": "methodology",
+        "description": "Praktische Erfahrung mit agilen Methoden (Scrum, Kanban) sowie CI/CD und DevOps-Praktiken (Docker, Jenkins, GitLab CI)",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R007",
+        "category": "technical_skill",
+        "description": "Erfahrung mit relationalen und nicht-relationalen Datenbanken (PostgreSQL, MongoDB)",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R008",
+        "category": "soft_skill",
+        "description": "Ausgeprägte analytische Fähigkeiten, Verantwortungsbewusstsein und Teamorientierung",
+        "importance": "should-have",
+        "weight": 7
+      },
+      {
+        "req_id": "R009",
+        "category": "language",
+        "description": "Sehr gute Deutsch- und Englischkenntnisse in Wort und Schrift (mind. C1)",
+        "importance": "must-have",
+        "weight": 10
+      },
+      {
+        "req_id": "R010",
+        "category": "technical_skill",
+        "description": "Kenntnisse in Message-Broker-Systemen wie Kafka und RabbitMQ (von Vorteil)",
+        "importance": "nice-to-have",
+        "weight": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,771 @@
+{
+  "name": "ApplicantScoring",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein präziser HR-Evaluator. Deine Aufgabe ist es, Bewerberdaten mit Jobanforderungen abzugleichen.\n\nBefolge zwingend diese Regeln:\n\nHard Skills & Halluzinationsprävention: Erfinde keine fachlichen Kompetenzen. Werte harte Kriterien (Tools, Jahre Berufserfahrung, Abschlüsse) strikt danach aus, was explizit im Lebenslauf steht oder sich logisch und eindeutig aus der beschriebenen Berufserfahrung ableiten lässt.\n\nBewertung von Soft Skills: Gehe bei weichen Faktoren (wie Teamfähigkeit, Kommunikationsstärke, Konfliktlösung) wohlwollender vor. Diese müssen nicht zwingend als Schlagwörter im Lebenslauf stehen. Leite sie stattdessen großzügig aus dem Profil ab (z. B. Projektarbeit, Scrum-Umfeld oder Cross-funktionale Teams implizieren Teamfähigkeit; Kundenkontakt, Präsentationen oder Führungsrollen implizieren Kommunikationsfertigkeiten).\n\nTransparenz: Begründe jede Entscheidung im Feld \"evidence_from_cv\" detailliert. Erkläre genau, warum Punkte vergeben oder abgezogen wurden. Wenn du Soft Skills ableitest, benenne die berufliche Station, die dich zu dieser Annahme führt.\n\nScoring: Werte jedes Requirement unabhängig aus. Verwende für den \"req_score\" ausschließlich einen dieser festen Werte:\n\n100: Anforderung vollständig erfüllt.\n\n75: Größtenteils erfüllt (z. B. 4 Jahre statt geforderter 5 Jahre Berufserfahrung; ein sehr ähnliches Tool belegt; oder generelle knappe Verfehlung).\n\n50: Teilweise erfüllt (z. B. Grundkenntnisse vorhanden, aber geforderte Expertenpraxis fehlt).\n\n25: Nur rudimentäre Ansätze erkennbar.\n\n0: Kriterium gar nicht erfüllt.\nBeachte die Wichtigkeit: Bei Nichterfüllung eines \"must-have\" Kriteriums muss der Score 0 betragen, es sei denn, es handelt sich um eine sehr knappe Verfehlung (wie im 75-Punkte-Beispiel), dann darf der Score entsprechend angepasst werden.\n\nFormat: Antworte ausschließlich mit einem validen JSON-Objekt. Generiere keinen Text außerhalb des JSON. Die Texte müssen komplett auf Deutsch verfasst sein. Die \"req_description\" darf in der Ausgabe maximal 50 Zeichen lang sein.\n\nAchte darauf, dass wirklich alle Requirements bewertet wurden.\n\nVerwende exakt diese JSON-Struktur für deinen Output:\n{\n\"applicant_first_name\": \"Vorname des Bewerbers\",\n\"applicant_last_name\": \"Nachname des Bewerbers\",\n\"applicant_email\": \"E-Mail-Adresse\",\n\"jobs_title\": \"Titel der ausgeschriebenen Stelle\",\n\"evaluation_summary\": \"Kurze, prägnante Zusammenfassung der Passung.\",\n\"criteria_evaluation\": [\n{\n\"req_id\": \"R001\",\n\"req_description\": \"Kurze Beschreibung (max. 50 Zeichen)\",\n\"importance\": \"should-have\",\n\"evidence_from_cv\": \"Ausführliche Erklärung der Punktevergabe.\",\n\"req_score\": 75\n}\n]\n}\n\nHier sind die Jobanforderungen:\n{{ $('HTTP Request get Job_Requirements').item.json.message.custom_requirements_profil }}\n\nHier sind die Bewerberdaten:\n{{ $json.Applicant }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        96,
+        -128
+      ],
+      "id": "691901fd-3c4f-4a0a-b1bf-8a773ffa686b",
+      "name": "Basic LLM Chain",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": "={{ $json.message.custom_temperature }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        96,
+        64
+      ],
+      "id": "9ab181b3-5891-4c18-bb5a-c76c8e7e1c92",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "GnI3LwT9giGC7g1N",
+          "name": "OpenRouter - Account AS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const weights = { \"must-have\": 10, \"should-have\": 3, \"nice-to-have\": 1};\n\nreturn $input.all().map(item => {\n  const applicant = item.json;\n  let totalScore = 0;\n  let totalWeight = 0;\n\n  if (applicant.criteria_evaluation && Array.isArray(applicant.criteria_evaluation)) {\n    applicant.criteria_evaluation.forEach(criterion => {\n      const weight = weights[criterion.importance] || 0;\n      const score = parseInt(criterion.req_score, 10) || 0;\n      totalScore += score * weight;\n      totalWeight += weight;\n    });\n  }\n\n  const finalScore = totalWeight > 0 ? (totalScore / totalWeight) : 0;\n\n  const erpnextPayload = {\n    stellenbezeichnung: applicant.jobs_title, \n    bewerberscore: Math.round(finalScore),\n    email: applicant.applicant_email,\n    vorname: applicant.applicant_first_name,\n    nachname: applicant.applicant_last_name,\n    zusammenfassung: applicant.evaluation_summary,\n    criteria_breakdown: applicant.criteria_evaluation\n      .map(crit => ({\n        criterion: crit.req_description,\n        importance: crit.importance,\n        score: crit.req_score,\n        evidence: crit.evidence_from_cv\n      }))\n      .sort((a, b) => {\n        // Wichtigkeit anhand des weights sortieren\n        const weightDiff = (weights[b.importance] || 0) - (weights[a.importance] || 0);\n        if (weightDiff !== 0) return weightDiff;\n        \n        // Bei Gleichstand nach Punktzahl absteigend sortieren\n        return (parseInt(b.score, 10) || 0) - (parseInt(a.score, 10) || 0);\n      })\n  };\n\n  return { json: erpnextPayload };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "024a9cf9-cbe9-45d6-87e9-586bce16ce5f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -720,
+        -128
+      ],
+      "id": "2d98c0a1-7376-425a-b96e-df0a02363ba9",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/method/frappe.client.get_value",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "doctype",
+              "value": "Job Opening"
+            },
+            {
+              "name": "filters",
+              "value": "={{ $json.data.job_title }}"
+            },
+            {
+              "name": "fieldname",
+              "value": "[\"custom_temperature\", \"custom_requirements_profil\"]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -448,
+        -128
+      ],
+      "id": "77197a02-3219-4411-8e93-1491f90c354e",
+      "name": "HTTP Request get Job_Requirements",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ke5kdsjrXy5s2GEy",
+          "name": "Header Auth account"
+        },
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8db38fc7-ae0c-4b30-abcd-4d9bd5a97d77",
+              "name": "Applicant",
+              "value": "={{ $('When Executed by Another Workflow').item.json.data.custom_json_cv_parsing }}",
+              "type": "string"
+            },
+            {
+              "id": "d17c364a-ea80-4483-b81e-599879f06ffa",
+              "name": "Jobanforderungen",
+              "value": "={{ $('HTTP Request get Job_Requirements').item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "24c810e6-20ff-4063-b8dc-d2f404a464ba",
+              "name": "message.custom_temperature",
+              "value": "={{ $json.message.custom_temperature }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -128
+      ],
+      "id": "b0db23af-99d8-4d09-8c65-f6c09e344857",
+      "name": "Merge Job_Requirements and Applicant Data"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://grp03.pia-web.ris.uni-due.de/api/resource/Job Applicant/{{ $('When Executed by Another Workflow').item.json.data.email_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "erpNextApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "custom_score",
+              "value": "={{ $json.bewerberscore }}"
+            },
+            {
+              "name": "custom_kurzfassung",
+              "value": "={{ $json.zusammenfassung }}"
+            },
+            {
+              "name": "=custom_bewertungen",
+              "value": "={{ $json.criteria_breakdown }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        656,
+        -128
+      ],
+      "id": "e90080a0-43f6-428f-985c-376ec6dad8f0",
+      "name": "Update Scoring",
+      "credentials": {
+        "erpNextApi": {
+          "id": "trA9dhTurcxOP38C",
+          "name": "ERPNextBot"
+        },
+        "httpHeaderAuth": {
+          "id": "Ke5kdsjrXy5s2GEy",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "data": {
+            "name": "markus.vogel@devmail.de",
+            "owner": "Guest",
+            "creation": "2026-07-17 15:49:41.969779",
+            "modified": "2026-07-17 15:50:08.809135",
+            "modified_by": "bot@vogel13.dev",
+            "docstatus": 0,
+            "idx": 0,
+            "custom_dsgvo_scoring_zustimmung": 1,
+            "custom_datenschutzhinweis_bewerber": 1,
+            "job_title": "HR-OPN-2026-0011",
+            "designation": "Senior Java Developer",
+            "status": "Open",
+            "custom_grund_für_den_rückzug": "Bewerber hat kein Grund angegeben",
+            "custom_vorname": "Markus",
+            "custom_straße": "Westenhellweg 87",
+            "custom_stadt": "Dortmund",
+            "custom_geburtsdatum": "1990-05-17",
+            "applicant_name": "Vogel",
+            "custom_postleitzahl": "44137",
+            "country": "Germany",
+            "custom_staatsangehörigkeit": "deutsch",
+            "email_id": "markus.vogel@devmail.de",
+            "phone_number": "+49 231 5551234",
+            "source": "Website Listing",
+            "applicant_rating": 0,
+            "cover_letter": "",
+            "currency": "EUR",
+            "lower_range": 0,
+            "upper_range": 0,
+            "custom_salary_expectations": 0,
+            "custom_zusammenfassung_cv": "Markus Vogel ist ein erfahrener Senior Java Entwickler mit über 6 Jahren Berufserfahrung in der Entwicklung hochskalierbarer Finanz- und Zahlungssysteme. Er verfügt über tiefe Expertise in der Modernisierung von Legacy-Systemen hin zu cloud-nativen Microservice-Architekturen unter Einsatz von Java 21, Quarkus, Spring Boot und gRPC. Zu seinen Kernkompetenzen zählen die Architektur verteilter Systeme, Performance-Optimierung (CPU-Reduktion 45%, Batch-Laufzeiten -50%), Observability (OpenTelemetry, MTTR -60%) sowie der Aufbau automatisierter CI/CD-Pipelines auf Azure/Kubernetes. Er führte ein 4-köpfiges Team fachlich, etablierte Event Storming für Architekturentscheidungen und trieb die ISO-20022-Migration mit signifikanten Qualitätsverbesserungen voran. Sein technischer Stack umfasst Java, Cloud-Infrastruktur (Azure, AKS, Terraform), Datenbanken (Oracle, PostgreSQL) und Messaging. Er besitzt einen M.Sc. in Informatik (Note 1,8) der TU Dortmund und verhandlungssichere Englischkenntnisse (C1).",
+            "resume_attachment": "/private/files/Markus_Vogel_CV.pdf",
+            "custom_applicant_photo_file": "",
+            "custom_höchster_bildungsabschluss": "M.Sc. Informatik",
+            "custom_bildungsabschluss_note": "1,8",
+            "custom_gesamtberufsjahre": 7,
+            "custom_github_profil": "github.com/mvogel-dev",
+            "custom_linkedin_profil": "markus-vogel-java",
+            "custom_json_cv_parsing": "{\n  \"custom_zusammenfassung_cv\": \"Markus Vogel ist ein erfahrener Senior Java Entwickler mit über 6 Jahren Berufserfahrung in der Entwicklung hochskalierbarer Finanz- und Zahlungssysteme. Er verfügt über tiefe Expertise in der Modernisierung von Legacy-Systemen hin zu cloud-nativen Microservice-Architekturen unter Einsatz von Java 21, Quarkus, Spring Boot und gRPC. Zu seinen Kernkompetenzen zählen die Architektur verteilter Systeme, Performance-Optimierung (CPU-Reduktion 45%, Batch-Laufzeiten -50%), Observability (OpenTelemetry, MTTR -60%) sowie der Aufbau automatisierter CI/CD-Pipelines auf Azure/Kubernetes. Er führte ein 4-köpfiges Team fachlich, etablierte Event Storming für Architekturentscheidungen und trieb die ISO-20022-Migration mit signifikanten Qualitätsverbesserungen voran. Sein technischer Stack umfasst Java, Cloud-Infrastruktur (Azure, AKS, Terraform), Datenbanken (Oracle, PostgreSQL) und Messaging. Er besitzt einen M.Sc. in Informatik (Note 1,8) der TU Dortmund und verhandlungssichere Englischkenntnisse (C1).\",\n  \"custom_hoechster_bildungsabschluss\": \"M.Sc. Informatik\",\n  \"custom_bildungsabschluss_note\": \"1,8\",\n  \"custom_gesamtberufsjahre\": 7,\n  \"custom_beruflicher_werdegang\": [\n    {\n      \"custom_cvunternehmen\": \"boradus AG\",\n      \"custom_cvjobtitel__position\": \"Senior Java Entwickler\",\n      \"custom_cvzeitraum\": \"01/2023 - Heute\"\n    },\n    {\n      \"custom_cvunternehmen\": \"FinCloud Systems GmbH\",\n      \"custom_cvjobtitel__position\": \"Java Entwickler\",\n      \"custom_cvzeitraum\": \"11/2019 - 12/2022\"\n    }\n  ],\n  \"custom_sprachkenntnisse\": [\n    {\n      \"custom_cvsprache\": \"Deutsch\",\n      \"custom_cvsprachniveau\": \"Muttersprache\"\n    },\n    {\n      \"custom_cvsprache\": \"Englisch\",\n      \"custom_cvsprachniveau\": \"C1\"\n    }\n  ],\n  \"custom_skills_und_technologien\": [\n    {\n      \"custom_cvskill_technologie\": \"Java 11/17/21\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Spring Boot\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Quarkus\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"gRPC\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Hibernate\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"JUnit 5\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Testcontainers\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Azure (AKS, Azure DevOps)\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Kubernetes\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Docker\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Terraform\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Git\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Maven\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"OpenTelemetry\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Oracle\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"PostgreSQL\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Redis\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Apache ActiveMQ\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Event Storming\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Microservices Architecture\",\n      \"custom_cveinstufung\": \"Experte\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"Reactive Streams\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    },\n    {\n      \"custom_cvskill_technologie\": \"ISO-20022\",\n      \"custom_cveinstufung\": \"Fortgeschritten\"\n    }\n  ],\n  \"custom_certificates\": [],\n  \"custom_projects\": [\n    {\n      \"custom_cvproject\": \"ISO-20022-Migration\",\n      \"custom_cvdescriptionproject\": \"Umstellung des Zahlungsverkehrssystems auf ISO-20022-Standard mit automatischer Nachrichtenvalidierung. Entwicklung eines gRPC-basierten Validierungsservices, Fehlerquote bei Zahlungseingängen von 3% auf 0,1% gesenkt.\",\n      \"custom_cvtime_period\": \"2024-2025\"\n    }\n  ],\n  \"custom_github_profil\": \"github.com/mvogel-dev\",\n  \"custom_linkedin_profil\": \"markus-vogel-java\"\n}",
+            "custom_score": 0,
+            "doctype": "Job Applicant",
+            "custom_certificates": [],
+            "custom_beruflicher_werdegang": [
+              {
+                "name": "vl8kr0clo9",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 1,
+                "custom_cvunternehmen": "boradus AG",
+                "custom_cvjobtitel__position": "Senior Java Entwickler",
+                "custom_cvzeitraum": "01/2023 - Heute",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_beruflicher_werdegang",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Experience History",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8muiba4j",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 2,
+                "custom_cvunternehmen": "FinCloud Systems GmbH",
+                "custom_cvjobtitel__position": "Java Entwickler",
+                "custom_cvzeitraum": "11/2019 - 12/2022",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_beruflicher_werdegang",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Experience History",
+                "__unsaved": 1
+              }
+            ],
+            "custom_skill_assessment_technical": [],
+            "custom_projects": [
+              {
+                "name": "vl831iavfp",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 1,
+                "custom_cvproject": "ISO-20022-Migration",
+                "custom_cvdescriptionproject": "Umstellung des Zahlungsverkehrssystems auf ISO-20022-Standard mit automatischer Nachrichtenvalidierung. Entwicklung eines gRPC-basierten Validierungsservices, Fehlerquote bei Zahlungseingängen von 3% auf 0,1% gesenkt.",
+                "custom_cvtime_period": "2024-2025",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_projects",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Projects",
+                "__unsaved": 1
+              }
+            ],
+            "custom_bewertungen": [],
+            "custom_sprachkenntnisse": [
+              {
+                "name": "vl835trkmf",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 1,
+                "custom_cvsprache": "Deutsch",
+                "custom_cvsprachniveau": "Muttersprache",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_sprachkenntnisse",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Languages",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8d6fikoa",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 2,
+                "custom_cvsprache": "Englisch",
+                "custom_cvsprachniveau": "C1",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_sprachkenntnisse",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Languages",
+                "__unsaved": 1
+              }
+            ],
+            "custom_skills_und_technologien": [
+              {
+                "name": "vl83svp17n",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 1,
+                "custom_cvskill_technologie": "Java 11/17/21",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl85bndndn",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 2,
+                "custom_cvskill_technologie": "Spring Boot",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8ft4adak",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 3,
+                "custom_cvskill_technologie": "Quarkus",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8ou5qln0",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 4,
+                "custom_cvskill_technologie": "gRPC",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8737buio",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 5,
+                "custom_cvskill_technologie": "Hibernate",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl807la5lq",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 6,
+                "custom_cvskill_technologie": "JUnit 5",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl87o56vcl",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 7,
+                "custom_cvskill_technologie": "Testcontainers",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl87vfcd4m",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 8,
+                "custom_cvskill_technologie": "Azure (AKS, Azure DevOps)",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8cgep7h6",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 9,
+                "custom_cvskill_technologie": "Kubernetes",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8l6pgsua",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 10,
+                "custom_cvskill_technologie": "Docker",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8omqouct",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 11,
+                "custom_cvskill_technologie": "Terraform",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8uaiqok1",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 12,
+                "custom_cvskill_technologie": "Git",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8satt1k5",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 13,
+                "custom_cvskill_technologie": "Maven",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8to68bb1",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 14,
+                "custom_cvskill_technologie": "OpenTelemetry",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl83ct5o6a",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 15,
+                "custom_cvskill_technologie": "Oracle",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl846i157v",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 16,
+                "custom_cvskill_technologie": "PostgreSQL",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8vcalh48",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 17,
+                "custom_cvskill_technologie": "Redis",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8t9p9gpl",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 18,
+                "custom_cvskill_technologie": "Apache ActiveMQ",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8l1nfcao",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 19,
+                "custom_cvskill_technologie": "Event Storming",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8odorb0u",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 20,
+                "custom_cvskill_technologie": "Microservices Architecture",
+                "custom_cveinstufung": "Experte",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8qvjnhjr",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 21,
+                "custom_cvskill_technologie": "Reactive Streams",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              },
+              {
+                "name": "vl8bouq7kv",
+                "owner": "bot@vogel13.dev",
+                "creation": "2026-07-17 15:49:41.969779",
+                "modified": "2026-07-17 15:50:08.809135",
+                "modified_by": "bot@vogel13.dev",
+                "docstatus": 0,
+                "idx": 22,
+                "custom_cvskill_technologie": "ISO-20022",
+                "custom_cveinstufung": "Fortgeschritten",
+                "parent": "markus.vogel@devmail.de",
+                "parentfield": "custom_skills_und_technologien",
+                "parenttype": "Job Applicant",
+                "doctype": "CV Skills",
+                "__unsaved": 1
+              }
+            ],
+            "custom_skill_assessment": []
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request get Job_Requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request get Job_Requirements": {
+      "main": [
+        [
+          {
+            "node": "Merge Job_Requirements and Applicant Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Job_Requirements and Applicant Data": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "aa3dc4a2-bd4c-4dbd-8b32-83436401ffa4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "feecff4ee87d901fec92a8285b12c2e797199ea12276c3a54db9cf374027adae"
+  },
+  "id": "DbT3DrlTn4YfeoXn",
+  "tags": []
+}
